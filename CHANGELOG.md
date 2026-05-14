@@ -19,7 +19,33 @@ range under a **Validated against** line.
 
 ## [Unreleased]
 
-(No changes yet since v1.0.0-beta.0.)
+(No changes yet since v1.0.0-beta.1.)
+
+## [1.0.0-beta.1] - 2026-05-14
+
+Patch on top of `v1.0.0-beta.0` to fix the release workflow.
+
+**Validated against**: `@react-pdf-kit/viewer` `>=1.0.0 <2.0.0`
+
+### Fixed
+
+- `.github/workflows/release.yml`: the "Confirm samples workflow
+  green for this commit" step incorrectly assumed `samples.yml` had
+  run against the tag commit on `main`, but `samples.yml` only
+  triggers on `pull_request` and `push to main`, never on tag
+  pushes. The query also hard-coded `--branch=main` even when the
+  tag was on `develop`, so it returned `'unknown'` and failed the
+  release on `v1.0.0-beta.0`. The step is now informational only:
+  it reports the samples run conclusion as a notice/warning and no
+  longer fails the release. The maintainer cutting the tag remains
+  responsible for ensuring the green PR for the tagged commit
+  exists.
+
+### Catalog content
+
+(No skill or content changes since `v1.0.0-beta.0`. All eight
+skills, README, MAINTENANCE, CLAUDE.md, conformance scripts, and
+the rest of the CI surface ship unchanged.)
 
 ## [1.0.0-beta.0] - 2026-05-14
 
