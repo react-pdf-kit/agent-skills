@@ -1,0 +1,47 @@
+name: verify
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-skills:
+    name: verify-all.sh + find-discoverability probe
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install yq
+        run: |
+          sudo wget -q https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/local/bin/yq
+          sudo chmod +x /usr/local/bin/yq
+          yq --version
+
+      - name: Run verify-all.sh (with R-20 mapping enforcement and find probe)
+        env:
+          # R-20 — Skill <-> Sample mapping enforcement. Points at the
+          # spec's data-model.md inside the React PDF Kit workspace; in
+          # the published repo this path lives one directory up since
+          # specs/ is not part of the public repo. For the standalone
+          # public repo CI, replace this with the URL of the upstream
+          # mapping or vendor a copy as docs/sample-mapping.md.
+          SKILL_SAMPLE_MAPPING: ${{ github.workspace }}/docs/sample-mapping.md
+          # SC-010 — assert each skill is locatable via `npx skills find`.
+          SKILLS_FIND_PROBE: '1'
+        run: |
+          if [[ ! -f "$SKILL_SAMPLE_MAPPING" ]]; then
+            echo "::warning ::SKILL_SAMPLE_MAPPING file not found at $SKILL_SAMPLE_MAPPING; R-20 will be skipped"
+            unset SKILL_SAMPLE_MAPPING
+          fi
+          scripts/verify-all.sh

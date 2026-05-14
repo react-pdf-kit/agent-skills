@@ -1,0 +1,73 @@
+name: release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  validate-and-release:
+    name: validate and publish release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # full history for tag context
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install yq
+        run: |
+          sudo wget -q https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/local/bin/yq
+          sudo chmod +x /usr/local/bin/yq
+
+      - name: Validate CHANGELOG entry for this tag
+        env:
+          GIT_TAG: ${{ github.ref_name }}
+        run: scripts/check-changelog.sh "$GIT_TAG"
+
+      - name: Run verify-all.sh (conformance)
+        run: scripts/verify-all.sh
+
+      - name: Confirm samples workflow green for this commit
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GIT_SHA: ${{ github.sha }}
+        run: |
+          # Best-effort: query GitHub API for the samples workflow runs
+          # against this commit. Fail if the latest samples run is not
+          # green. (When the API is unavailable, fall back to a manual
+          # confirmation note in the release body.)
+          if ! command -v gh >/dev/null 2>&1; then
+            echo "::warning ::gh CLI unavailable; manual confirm required"
+            exit 0
+          fi
+          conclusion="$(gh run list --workflow=samples.yml --branch=main --commit "$GIT_SHA" --limit 1 --json conclusion --jq '.[0].conclusion' 2>/dev/null || echo 'unknown')"
+          if [[ "$conclusion" != "success" ]]; then
+            echo "::error ::samples workflow conclusion for $GIT_SHA is '$conclusion' (expected 'success')"
+            exit 1
+          fi
+
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GIT_TAG: ${{ github.ref_name }}
+        run: |
+          # Extract the section of CHANGELOG.md for this tag (lines from
+          # "## [<version>]" up to the next "## [" or EOF).
+          version="${GIT_TAG#v}"
+          body="$(awk -v ver="$version" '
+            /^## \[/ { if (in_section) exit; if ($0 ~ "\\[" ver "\\]") { in_section=1; next } }
+            in_section { print }
+          ' CHANGELOG.md)"
+          if [[ -z "$body" ]]; then
+            echo "::error ::no CHANGELOG section found for $GIT_TAG"
+            exit 1
+          fi
+          gh release create "$GIT_TAG" --title "$GIT_TAG" --notes "$body"

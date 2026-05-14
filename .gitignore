@@ -1,0 +1,59 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build outputs
+dist/
+build/
+out/
+.next/
+.turbo/
+.cache/
+.parcel-cache/
+
+# Test / verification artifacts
+coverage/
+.nyc_output/
+playwright-report/
+test-results/
+
+# Sample-project ephemeral state (do not commit pnpm-lock; samples
+# pin versions in package.json and CI installs fresh)
+samples/*/node_modules/
+samples/*/.next/
+samples/*/dist/
+samples/*/build/
+
+# Editor / OS junk
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
+*.code-workspace
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Environment files (never commit)
+.env
+.env.*
+!.env.example
+
+# Temporary files
+*.tmp
+*.temp
+
+# Authoring tooling — these are machinery used to produce the catalog,
+# not part of the published catalog itself. The spec-kit feature
+# describing this repo lives in the sibling outer workspace's specs/
+# directory and is intentionally not shipped here.
+.specify/
+.omc/
+.claude/

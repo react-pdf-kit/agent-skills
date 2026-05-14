@@ -1,0 +1,67 @@
+name: samples
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: samples / ${{ matrix.sample }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        sample:
+          - generic-react
+          - vite
+          - nextjs-app-router
+          - nextjs-14-override
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 9
+          run_install: false
+
+      - name: Cache pnpm store
+        uses: actions/cache@v4
+        with:
+          path: ~/.pnpm-store
+          key: ${{ runner.os }}-pnpm-${{ matrix.sample }}-${{ hashFiles(format('samples/{0}/package.json', matrix.sample)) }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-${{ matrix.sample }}-
+
+      - name: Install
+        working-directory: samples/${{ matrix.sample }}
+        run: pnpm install --ignore-scripts
+
+      - name: Build
+        working-directory: samples/${{ matrix.sample }}
+        run: pnpm build
+
+      # Playwright worker-URL assertion lives under
+      # samples/<sample>/verification/worker-config.spec.ts (added by
+      # task T030). The step is opt-in via the presence of that file
+      # so samples without it don't fail.
+      - name: Playwright worker-config assertion (if present)
+        working-directory: samples/${{ matrix.sample }}
+        run: |
+          if [ -f verification/worker-config.spec.ts ]; then
+            pnpm dlx playwright install --with-deps chromium
+            pnpm dlx playwright test verification/worker-config.spec.ts
+          else
+            echo "no verification/worker-config.spec.ts; skipping"
+          fi

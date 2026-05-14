@@ -1,0 +1,25 @@
+{
+  "name": "@react-pdf-kit-skills/sample-vite",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "description": "Vite 5 + pdfjs-dist v5 sample used to verify react-pdf-kit-setup, react-pdf-kit-vite, and react-pdf-kit-worker-config skills. vite.config.ts is pre-arranged for PDF.js worker integration.",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@react-pdf-kit/viewer": ">=1.0.0 <2.0.0",
+    "pdfjs-dist": "5.4.530",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.0",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.3.0",
+    "typescript": "^5.5.0",
+    "vite": "^5.4.0"
+  }
+}

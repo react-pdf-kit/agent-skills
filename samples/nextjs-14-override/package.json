@@ -1,0 +1,35 @@
+{
+  "name": "@react-pdf-kit-skills/sample-nextjs-14-override",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Next.js 14 (webpack) + pdfjs-dist v4 sample used to validate the react-pdf-kit-nextjs14-pdfjs-override skill. Baseline is the post-fix state (pdfjs-dist v4). T033 flips the override to capture the pre-fix failure transcript and reverts.",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "@react-pdf-kit/viewer": ">=1.0.0 <2.0.0",
+    "next": "^14.2.0",
+    "pdfjs-dist": "4.10.38",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/react": "^18.3.0",
+    "@types/react-dom": "^18.3.0",
+    "typescript": "^5.5.0"
+  },
+  "pnpm": {
+    "overrides": {
+      "pdfjs-dist": "4.10.38"
+    }
+  },
+  "overrides": {
+    "pdfjs-dist": "4.10.38"
+  },
+  "resolutions": {
+    "pdfjs-dist": "4.10.38"
+  }
+}
