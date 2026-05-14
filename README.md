@@ -157,12 +157,17 @@ $ # Open Claude Code (or your agent of choice) and ask:
 The same shape works under Cursor, OpenCode, and Codex — the CLI
 routes the install into the right per-agent directory automatically.
 
-## Contributing
+## Contributions
 
-See [CONTRIBUTING.md](./CONTRIBUTING.md) for the skill-authoring
-workflow, format requirements (per
-[`skill-md-schema.md`](./specs/001-react-pdf-kit-skills/contracts/skill-md-schema.md))
-and review checklist.
+This catalog is **not currently accepting external contributions**.
+The maintainers are still validating the v1 catalog end to end and
+the contribution workflow has not been opened up yet.
+
+If you'd like to **request a new skill**, **report an incorrect
+recipe**, or **flag a stale version range**, please
+[open an issue](https://github.com/react-pdf-kit/agent-skills/issues).
+We'll triage it and either author the skill in-house or revisit the
+contribution surface once the v1 verification protocol is settled.
 
 ## Maintenance & releases
 

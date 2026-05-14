@@ -23,8 +23,9 @@ range under a **Validated against** line.
 
 ### Added
 
-- Initial scaffolding: LICENSE (MIT), README, CONTRIBUTING,
-  MAINTENANCE, CODEOWNERS, .gitignore.
+- Initial scaffolding: LICENSE (MIT), README, MAINTENANCE,
+  .gitignore. (CONTRIBUTING and CODEOWNERS were authored and then
+  removed before first release — see Removed below.)
 - Conformance scripts: `scripts/verify-skill.sh`,
   `scripts/verify-all.sh`, `scripts/apply-skill-to-sample.sh`,
   `scripts/check-changelog.sh`.
@@ -52,7 +53,13 @@ range under a **Validated against** line.
 
 ### Removed
 
-- (none yet)
+- `CONTRIBUTING.md` and `CODEOWNERS`. The catalog is not currently
+  accepting external contributions, and the placeholder CODEOWNERS
+  teams (`@react-pdf-kit/maintainers`, `@react-pdf-kit/samples-owners`,
+  `@react-pdf-kit/infra-owners`) do not yet exist on GitHub. README's
+  "Contributions" section now directs would-be contributors to open
+  an issue. Both files will be reintroduced when external
+  contributions open up.
 
 ### Fixed
 

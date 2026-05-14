@@ -21,11 +21,9 @@ It is a content/documentation repo, not a JavaScript application.
 ```text
 .
 ├── README.md                       # consumer-facing overview + worked examples
-├── CONTRIBUTING.md                 # author workflow, schema requirements, checklist
 ├── MAINTENANCE.md                  # release runbook, deprecation flow, security stance
 ├── CHANGELOG.md                    # one section per tagged release
 ├── LICENSE                         # MIT
-├── CODEOWNERS                      # review routing
 ├── skills/<skill-name>/SKILL.md    # the catalog content (8 skills at v1)
 ├── samples/<sample>/               # runnable sample projects used to verify skills
 ├── scripts/verify-skill.sh         # per-skill conformance check (R-10..R-20)
@@ -34,6 +32,10 @@ It is a content/documentation repo, not a JavaScript application.
 ├── scripts/check-changelog.sh      # release.yml gate
 └── .github/workflows/              # verify.yml, samples.yml, release.yml
 ```
+
+External contributions are **not currently accepted** — see the
+"Contributions" section in `README.md`. The author workflow below is
+for maintainers.
 
 ## Common commands
 
@@ -51,22 +53,50 @@ scripts/apply-skill-to-sample.sh react-pdf-kit-nextjs-app-router nextjs-app-rout
 scripts/check-changelog.sh v1.0.0
 ```
 
-## Authoring a new skill
+## Authoring a new skill (maintainers)
 
-1. Read [`CONTRIBUTING.md`](./CONTRIBUTING.md) end to end.
-2. Scaffold: `npx skills init react-pdf-kit-<topic>`, then move the
+1. Scaffold: `npx skills init react-pdf-kit-<topic>`, then move the
    resulting `SKILL.md` into `skills/react-pdf-kit-<topic>/`.
-3. Fill the YAML frontmatter per the
-   [`SKILL.md` schema](./CONTRIBUTING.md#skillmd-schema-summary).
-4. Author the body (Lead → **Gotchas** → Procedure → Verify →
-   References) following the
+2. Fill the required YAML frontmatter:
+
+   ```yaml
+   ---
+   name: react-pdf-kit-<topic>            # MUST equal the directory name
+   description: <one sentence, ≤200 chars>
+   metadata:
+     react_pdf_kit_version: ">=1.0.0 <2.0.0"
+     pdfjs_dist_version: ">=5.0.0 <6.0.0"
+     frameworks: [react]                  # optional; subset of [react, next.js, vite, webpack]
+   ---
+   ```
+
+   Allow-listed fields only — `verify-skill.sh` rule R-15 fails on
+   unknown keys. Optional: `metadata.tags`, `metadata.deprecated_in`,
+   `metadata.internal`.
+
+3. Author the body (≤500 lines / ~5,000 tokens) following the
    [agentskills.io best practices](https://agentskills.io/skill-creation/best-practices).
-5. Verify locally: `scripts/verify-skill.sh skills/react-pdf-kit-<topic>`
-   then `scripts/apply-skill-to-sample.sh <skill> <sample>` then
-   `pnpm install && pnpm build` in the sample.
-6. Tick every applicable item on the
-   [Skill Author Checklist](./CONTRIBUTING.md#skill-author-checklist)
-   and open a PR.
+   Recommended section order: Lead paragraph → **Gotchas** →
+   Procedure → Verify → References. Long reference material lives
+   under `references/`, loaded conditionally ("Read X when …").
+4. Add the skill to a sample project (or add a new sample), then
+   verify locally:
+
+   ```bash
+   scripts/verify-skill.sh skills/react-pdf-kit-<topic>
+   scripts/apply-skill-to-sample.sh react-pdf-kit-<topic> <sample-name>
+   (cd samples/<sample-name> && pnpm install && pnpm build)
+   ```
+
+   All three must succeed.
+5. Update `MAINTENANCE.md` §"Sample inventory" if the Skill ↔ Sample
+   mapping changed. Update `README.md`'s "Skill Catalog" table with
+   the new row.
+6. Add a CHANGELOG entry under `## [Unreleased]` →
+   `### Added` naming the new skill.
+
+CI (`.github/workflows/verify.yml` + `samples.yml`) re-runs the
+conformance script and the sample-build matrix on every PR.
 
 ## Constraints inherited from the React PDF Kit constitution
 
@@ -87,8 +117,8 @@ repo). Skills MUST NOT contradict its five principles:
    declares `metadata.react_pdf_kit_version` and
    `metadata.pdfjs_dist_version` matching the sample that verified it.
 
-The author checklist in `CONTRIBUTING.md` reproduces these as
-review items.
+Maintainers reviewing a new skill MUST evaluate it against each of
+these five principles before merge.
 
 ## Compatibility
 

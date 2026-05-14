@@ -152,7 +152,7 @@ Re-run on every release and update the "last reviewed" date.
 
 ## Document ownership
 
-This file is maintained by the same code owners as `skills/*` (see
-`CODEOWNERS`). Major changes (versioning policy revision, new release
-artifact, registry choice) require a PR that updates both this file
-and `CONTRIBUTING.md` if user-facing.
+This file is maintained by the React PDF Kit catalog maintainers.
+Major changes (versioning policy revision, new release artifact,
+registry choice) require a PR that updates this file and any
+user-facing references in `README.md`.
