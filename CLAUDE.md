@@ -33,7 +33,7 @@ It is a content/documentation repo, not a JavaScript application.
 └── .github/workflows/              # verify.yml, samples.yml, release.yml
 ```
 
-External contributions are **not currently accepted** — see the
+External contributions are **not currently accepted**. See the
 "Contributions" section in `README.md`. The author workflow below is
 for maintainers.
 
@@ -70,7 +70,7 @@ scripts/check-changelog.sh v1.0.0
    ---
    ```
 
-   Allow-listed fields only — `verify-skill.sh` rule R-15 fails on
+   Allow-listed fields only. `verify-skill.sh` rule R-15 fails on
    unknown keys. Optional: `metadata.tags`, `metadata.deprecated_in`,
    `metadata.internal`.
 
@@ -104,16 +104,16 @@ The library that this catalog teaches is governed by a project
 constitution that lives in the React PDF Kit workspace (not in this
 repo). Skills MUST NOT contradict its five principles:
 
-1. Viewer-First Experience — never advise patterns that degrade
+1. Viewer-First Experience: never advise patterns that degrade
    reader UX (text selection, keyboard nav, a11y).
-2. Integrator Respect — no globals, no peer-dep bundling, no
+2. Integrator Respect: no globals, no peer-dep bundling, no
    bundler monkey-patching.
-3. Composable & Headless-Capable — default-layout skills use the
+3. Composable & Headless-Capable: default-layout skills use the
    full provider chain; customization skills use documented hooks
    only.
-4. Performance & Rendering Discipline — no instruction breaks
+4. Performance & Rendering Discipline: no instruction breaks
    virtualization or moves PDF.js off the worker.
-5. Peer Dependency & Compatibility Stewardship — every skill
+5. Peer Dependency & Compatibility Stewardship: every skill
    declares `metadata.react_pdf_kit_version` and
    `metadata.pdfjs_dist_version` matching the sample that verified it.
 

@@ -30,16 +30,18 @@ mounting it requires `next/dynamic` with `ssr: false`.
   emits the worker as a separate asset. Hardcoding `/pdf.worker.js`
   will silently fail (the file is not served from the public root by
   default).
-- **Configure the worker inside `useEffect`** — running it at module
+- **Configure the worker inside `useEffect`**. Running it at module
   top-level executes during SSR and blows up because `import.meta.url`
   resolves to a server-side path.
 - **`pdfjs-dist@5` is ESM-only**. Works on Next.js 13+ and on Next.js
   15. On Next.js 14 with webpack it fails with `TypeError:
-  Object.defineProperty called on non-object` — apply
-  `react-pdf-kit-nextjs14-pdfjs-override` first.
+  Object.defineProperty called on non-object`. Apply
+  `react-pdf-kit-nextjs14-pdfjs-override` first in that case.
 - **`_app.tsx` is the wrong place for the worker config**. `_app.tsx`
   runs on the server too. Put the config inside the viewer component's
   `useEffect`, never at module load.
+- **`RPDefaultLayout` is deprecated** as of `@react-pdf-kit/viewer`
+  v2.0.0. Use `RPLayout` for every new integration.
 
 ## Procedure
 
@@ -58,8 +60,7 @@ import { GlobalWorkerOptions } from 'pdfjs-dist'
 import {
   RPConfig,
   RPProvider,
-  RPTheme,
-  RPDefaultLayout,
+  RPLayout,
   RPPages,
 } from '@react-pdf-kit/viewer'
 
@@ -74,18 +75,16 @@ export default function PdfViewer({ src }: { src: string }) {
   return (
     <RPConfig>
       <RPProvider src={src}>
-        <RPTheme>
-          <RPDefaultLayout>
-            <RPPages />
-          </RPDefaultLayout>
-        </RPTheme>
+        <RPLayout>
+          <RPPages />
+        </RPLayout>
       </RPProvider>
     </RPConfig>
   )
 }
 ```
 
-Note the `default` export — `next/dynamic` works most ergonomically
+Note the `default` export. `next/dynamic` works most ergonomically
 with default exports.
 
 ### 3. Mount via `next/dynamic` with `ssr: false`
@@ -97,7 +96,7 @@ import { useRouter } from 'next/router'
 
 const PdfViewer = dynamic(() => import('../../components/PdfViewer'), {
   ssr: false,
-  loading: () => <div>Loading viewer…</div>,
+  loading: () => <div>Loading viewer...</div>,
 })
 
 export default function DocumentPage() {
@@ -128,7 +127,7 @@ pnpm build       # must succeed under SSR + production build
 pnpm dev         # visit /document/<id>
 ```
 
-Open DevTools Network tab — confirm `pdf.worker.min.mjs` is fetched
+Open DevTools Network tab and confirm `pdf.worker.min.mjs` is fetched
 from a webpack-emitted asset path, NOT from `/pdf.worker.js`. SSR
 should produce HTML containing the loading state, then the viewer
 mounts client-side after hydration.
@@ -138,6 +137,6 @@ mounts client-side after hydration.
 - `next/dynamic` API: <https://nextjs.org/docs/pages/api-reference/components/dynamic>
 - PDF.js worker setup: <https://github.com/mozilla/pdf.js/wiki/Setup-PDF.js-in-a-website>
 - Companion skills:
-  - `react-pdf-kit-nextjs14-pdfjs-override` — apply this **first** if
+  - `react-pdf-kit-nextjs14-pdfjs-override`: apply this **first** if
     on Next.js 14 + webpack.
-  - `react-pdf-kit-nextjs-app-router` — for App Router projects.
+  - `react-pdf-kit-nextjs-app-router`: for App Router projects.

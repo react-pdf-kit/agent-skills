@@ -35,7 +35,7 @@ worker. The bug is fixed in Next.js 15 (and avoided entirely under
 Turbopack), but Next.js 14 + webpack remains broken.
 
 The workaround is to pin `pdfjs-dist` to v4, which still ships both
-ESM and CommonJS — webpack 5 picks the CommonJS build and the import
+ESM and CommonJS. Webpack 5 picks the CommonJS build and the import
 chain succeeds. `@react-pdf-kit/viewer` declares its `pdfjs-dist`
 peer range to include both v4 and v5, so the v4 pin is supported.
 
@@ -75,8 +75,8 @@ TypeError: Object.defineProperty called on non-object
 
 (or a similar stack rooted in `pdfjs-dist/build/pdf.mjs`), AND the
 project's `next` version starts with `14.`, AND the project does NOT
-have `experimental.turbo` or `--turbo` enabled — this is the bug
-this skill addresses.
+have `experimental.turbo` or `--turbo` enabled. This is the bug this
+skill addresses.
 
 ### 2. Add the package-manager overrides
 
@@ -98,8 +98,8 @@ Edit `package.json`. Add ALL THREE of the following blocks:
 }
 ```
 
-Pin to a specific 4.x patch (e.g., `4.10.38`), not a range — overrides
-behave most predictably with exact versions.
+Pin to a specific 4.x patch (for example, `4.10.38`), not a range.
+Overrides behave most predictably with exact versions.
 
 Also bump the `pdfjs-dist` line in `dependencies` (or
 `devDependencies`) to match:
@@ -159,10 +159,10 @@ pnpm dev        # render a PDF; first page must appear
 ```
 
 Pre-fix and post-fix transcripts are captured by task T033 in
-`samples/nextjs-14-override/verification/`. Reproducing the bug to
-double-check this skill is intact: temporarily flip the override
-and the `dependencies` entry to `5.4.530`, re-install, build —
-expect the documented error.
+`samples/nextjs-14-override/verification/`. To reproduce the bug
+and double-check this skill is intact: temporarily flip the override
+and the `dependencies` entry to `5.4.530`, re-install, then build.
+The documented error should appear.
 
 ## References
 
@@ -171,5 +171,6 @@ expect the documented error.
 - npm overrides: <https://docs.npmjs.com/cli/v9/configuring-npm/package-json#overrides>
 - yarn resolutions: <https://classic.yarnpkg.com/lang/en/docs/selective-version-resolutions/>
 - Companion skills:
-  - `react-pdf-kit-nextjs-app-router` / `react-pdf-kit-nextjs-pages-router` —
-    apply AFTER this override to set up the actual viewer.
+  - `react-pdf-kit-nextjs-app-router` and
+    `react-pdf-kit-nextjs-pages-router`: apply either of these AFTER
+    this override to set up the actual viewer.

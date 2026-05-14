@@ -17,7 +17,7 @@ Router** (`app/` directory). For Pages Router projects use
 the `pdfjs-dist@5` ESM error, ALSO install
 `react-pdf-kit-nextjs14-pdfjs-override` and apply that recipe first.
 
-The viewer touches the `window` and `Worker` globals — it cannot run
+The viewer touches the `window` and `Worker` globals, so it cannot run
 on the server. The skill structures the integration around that
 constraint.
 
@@ -30,23 +30,24 @@ constraint.
   to keep the route a Server Component overall.
 - **Worker URL must use `new URL(..., import.meta.url)`**. Both
   Turbopack and webpack 5 emit the worker as a separate asset when
-  given that pattern. Do NOT hardcode `/pdf.worker.js` — Next will
-  not place the file there, and the viewer will silently render
-  blank.
+  given that pattern. Do NOT hardcode `/pdf.worker.js`. Next will not
+  place the file there, and the viewer will silently render blank.
 - **`pdfjs-dist@5` is ESM-only**. This works on Next.js 13+ with
   Turbopack out of the box, and on Next.js 15 with webpack. On
   Next.js 14 with webpack it fails with `TypeError:
-  Object.defineProperty called on non-object` — use
+  Object.defineProperty called on non-object`. Use
   `react-pdf-kit-nextjs14-pdfjs-override` to downgrade `pdfjs-dist` to
   v4.
 - **Hydration**: render the viewer inside a fixed-height container so
   layout doesn't shift on hydration. Without a definite height, the
   virtualizer can mount with 0 rows and never recover.
 - **Fonts**: PDF.js fetches its `cmaps/` and `standard_fonts/` from
-  the worker. With Turbopack/webpack defaults this works; if you
+  the worker. With Turbopack and webpack defaults this works. If you
   customize asset routing, also serve `node_modules/pdfjs-dist/cmaps/`
   and `node_modules/pdfjs-dist/standard_fonts/` from a stable public
   path or expect missing-glyph rendering for non-Latin PDFs.
+- **`RPDefaultLayout` is deprecated** as of `@react-pdf-kit/viewer`
+  v2.0.0. Use `RPLayout` for every new integration.
 
 ## Procedure
 
@@ -67,8 +68,7 @@ import { GlobalWorkerOptions } from 'pdfjs-dist'
 import {
   RPConfig,
   RPProvider,
-  RPTheme,
-  RPDefaultLayout,
+  RPLayout,
   RPPages,
 } from '@react-pdf-kit/viewer'
 
@@ -83,11 +83,9 @@ export function PdfViewer({ src }: { src: string }) {
   return (
     <RPConfig>
       <RPProvider src={src}>
-        <RPTheme>
-          <RPDefaultLayout>
-            <RPPages />
-          </RPDefaultLayout>
-        </RPTheme>
+        <RPLayout>
+          <RPPages />
+        </RPLayout>
       </RPProvider>
     </RPConfig>
   )
@@ -96,7 +94,7 @@ export function PdfViewer({ src }: { src: string }) {
 
 The worker URL configuration runs once in `useEffect` so it executes
 client-side only. Configuring it at module top-level also works under
-Turbopack but throws under webpack SSR — `useEffect` is the safe
+Turbopack but throws under webpack SSR, so `useEffect` is the safe
 default.
 
 ### 3. Mount via dynamic import from a Server Component (if applicable)
@@ -110,7 +108,7 @@ import dynamic from 'next/dynamic'
 
 const PdfViewer = dynamic(
   () => import('../../_components/PdfViewer').then(m => m.PdfViewer),
-  { ssr: false, loading: () => <div>Loading viewer…</div> }
+  { ssr: false, loading: () => <div>Loading viewer...</div> }
 )
 
 export default function DocumentPage({ params }: { params: { id: string } }) {
@@ -123,13 +121,13 @@ export default function DocumentPage({ params }: { params: { id: string } }) {
 ```
 
 If the page is already a Client Component (`'use client'` at the top),
-import `PdfViewer` directly without `dynamic` — the lazy/SSR-disable
-dance is unnecessary.
+import `PdfViewer` directly without `dynamic`. The lazy / SSR-disable
+dance is unnecessary in that case.
 
 ### 4. Confirm the host has a definite height
 
 The viewer's virtualizer requires a measurable viewport. Wrap it in a
-`height: 100vh` (or fixed-height) container, OR put it in a flex/grid
+`height: 100vh` (or fixed-height) container, OR put it in a flex / grid
 ancestor with `min-height` set.
 
 ## Verify
@@ -141,7 +139,7 @@ pnpm dev           # then visit /document/<id>
 ```
 
 Open the page. The first PDF page should render with the default
-toolbar. Open DevTools Network tab — confirm `pdf.worker.min.mjs` is
+toolbar. Open DevTools Network tab and confirm `pdf.worker.min.mjs` is
 fetched from a `_next/static/...` path (Turbopack) or a chunked asset
 URL (webpack), NOT from a 404'd `/pdf.worker.js`.
 
@@ -150,7 +148,7 @@ URL (webpack), NOT from a 404'd `/pdf.worker.js`.
 - Next.js dynamic import: <https://nextjs.org/docs/app/api-reference/functions/dynamic>
 - PDF.js worker setup: <https://github.com/mozilla/pdf.js/wiki/Setup-PDF.js-in-a-website>
 - Companion skills:
-  - `react-pdf-kit-nextjs14-pdfjs-override` — apply this **first** if
+  - `react-pdf-kit-nextjs14-pdfjs-override`: apply this **first** if
     on Next.js 14 + webpack.
-  - `react-pdf-kit-worker-config` — for advanced worker URL strategies
+  - `react-pdf-kit-worker-config`: for advanced worker URL strategies
     (CDN-hosted worker, locked-down CSP, etc.).

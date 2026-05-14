@@ -1,16 +1,16 @@
 # @react-pdf-kit/agent-skills
 
-> Agent skills for [@react-pdf-kit/viewer](https://github.com/react-pdf-kit/viewer)
-> — install with `npx skills add react-pdf-kit/agent-skills` and let your
+> Agent skills for [@react-pdf-kit/viewer](https://github.com/react-pdf-kit/viewer).
+> Install with `npx skills add react-pdf-kit/agent-skills` and let your
 > AI coding agent integrate the React PDF Kit library correctly on the
 > first attempt.
 
 This repository is a curated catalog of [agent skills](https://agentskills.io)
-that teach AI coding agents (Claude Code, Cursor, OpenCode, Codex, …) how
-to set up, customize, and troubleshoot the React PDF Kit viewer across
-the React, Next.js, and Vite ecosystems. Skills are installed via the
-open-source [vercel-labs/skills](https://github.com/vercel-labs/skills)
-CLI.
+that teach AI coding agents (Claude Code, Cursor, OpenCode, Codex, and
+anything else that follows the same convention) how to set up,
+customize, and troubleshoot the React PDF Kit viewer across the React,
+Next.js, and Vite ecosystems. Skills are installed via the open-source
+[vercel-labs/skills](https://github.com/vercel-labs/skills) CLI.
 
 ## Who is this for?
 
@@ -102,15 +102,15 @@ These behaviors are governed by the upstream
 [vercel-labs/skills](https://github.com/vercel-labs/skills) CLI; reading
 them here helps you interpret errors quickly.
 
-- **`no matching skill` after `npx skills add <name>`** — the name is
+- **`no matching skill` after `npx skills add <name>`**: the name is
   wrong or the skill has been renamed. Symptom: CLI exits non-zero with
   a "no matching skill" line. Response: run `npx skills find <keyword>`
   and pick the exact `name` from the result list.
-- **Network failure during `add`** — the CLI fails fast with the
+- **Network failure during `add`**: the CLI fails fast with the
   underlying transport error and does **not** leave a partial install.
   Response: retry once the network is restored. There is no recovery
   step needed.
-- **Re-install of an already-installed skill** — the CLI prompts before
+- **Re-install of an already-installed skill**: the CLI prompts before
   overwriting (or refuses if `--yes` is not set). Response: either
   confirm overwrite (you lose local edits to the installed copy) or
   decline and uninstall the existing copy first with
@@ -122,23 +122,22 @@ gotchas, stale version range), open an issue in this repository.
 ## How an AI agent discovers and uses this repo
 
 The transcript below is a representative session showing the
-discover → install → ask flow. It is the same flow the spec's SC-001
+discover, install, ask flow. It is the same flow the spec's SC-001
 trial protocol exercises (see
-`specs/001-react-pdf-kit-skills/tasks.md` T041); replace this
-example with an anonymized real session captured during T041 once
-that runs.
+`specs/001-react-pdf-kit-skills/tasks.md` T041). Replace this example
+with an anonymized real session captured during T041 once that runs.
 
 ```text
 $ pnpm create next-app@latest my-pdf-app -- --ts --eslint --app --no-tailwind --no-src-dir --turbo
-… (Next.js scaffold completes)
+... (Next.js scaffold completes)
 
 $ cd my-pdf-app
 
 $ npx skills find "react pdf kit next.js"
-react-pdf-kit-nextjs-app-router          Integrate @react-pdf-kit/viewer (>=1.0.0 <2.0.0) into a Next.js…
-react-pdf-kit-nextjs14-pdfjs-override    Override pdfjs-dist to v4 to work around the Next.js 14 + pdfjs-dist v5…
-react-pdf-kit-nextjs-pages-router        Integrate @react-pdf-kit/viewer (>=1.0.0 <2.0.0) into a Next.js Pages…
-react-pdf-kit-worker-config              Configure the PDF.js worker URL across supported bundlers…
+react-pdf-kit-nextjs-app-router          Integrate @react-pdf-kit/viewer (>=1.0.0 <2.0.0) into a Next.js...
+react-pdf-kit-nextjs14-pdfjs-override    Override pdfjs-dist to v4 to work around the Next.js 14 + pdfjs-dist v5...
+react-pdf-kit-nextjs-pages-router        Integrate @react-pdf-kit/viewer (>=1.0.0 <2.0.0) into a Next.js Pages...
+react-pdf-kit-worker-config              Configure the PDF.js worker URL across supported bundlers...
 
 $ npx skills add react-pdf-kit/agent-skills#react-pdf-kit-nextjs-app-router
 Installed react-pdf-kit-nextjs-app-router into .claude/skills/
@@ -154,7 +153,7 @@ $ # Open Claude Code (or your agent of choice) and ask:
 # the first PDF page.
 ```
 
-The same shape works under Cursor, OpenCode, and Codex — the CLI
+The same shape works under Cursor, OpenCode, and Codex. The CLI
 routes the install into the right per-agent directory automatically.
 
 ## Contributions
@@ -176,10 +175,10 @@ versioning policy, deprecation flow, and skills.sh submission tracker.
 
 ## Related projects
 
-- [react-pdf-kit/viewer](https://github.com/react-pdf-kit/viewer) — the
+- [react-pdf-kit/viewer](https://github.com/react-pdf-kit/viewer): the
   React PDF Kit library this catalog teaches.
-- [agentskills.io](https://agentskills.io) — the agent-skills standard.
-- [vercel-labs/skills](https://github.com/vercel-labs/skills) — the
+- [agentskills.io](https://agentskills.io): the agent-skills standard.
+- [vercel-labs/skills](https://github.com/vercel-labs/skills): the
   open-source `npx skills` CLI implementing the standard.
 
 ## License

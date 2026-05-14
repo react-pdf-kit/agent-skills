@@ -60,8 +60,8 @@ version range** the skills were exercised against.
 
 ## Deprecation flow
 
-To deprecate a skill **without** removing it (preferred — gives
-consumers time to migrate):
+To deprecate a skill **without** removing it (preferred, since it
+gives consumers time to migrate):
 
 1. Add `metadata.deprecated_in: <next-release-version>` to the skill's
    frontmatter.
@@ -109,7 +109,7 @@ release after v1.0.0.
 
 | Date | Action | Notes |
 |------|--------|-------|
-| — | — | First entry will be added on submission. |
+|      |        | First entry will be added on submission. |
 
 ## Sample inventory
 
@@ -131,8 +131,8 @@ end-to-end to ensure the runbook stays accurate. Record each walk here.
 
 | Date | Flow | Outcome |
 |------|------|---------|
-| — | Deprecation drill (per tasks T038) | TBD |
-| — | First release (v1.0.0, per tasks T045) | TBD |
+|      | Deprecation drill (per tasks T038) | TBD |
+|      | First release (v1.0.0, per tasks T045) | TBD |
 
 ## Security review
 

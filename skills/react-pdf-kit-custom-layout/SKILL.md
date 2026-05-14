@@ -1,6 +1,6 @@
 ---
 name: react-pdf-kit-custom-layout
-description: Build a fully headless / custom layout for @react-pdf-kit/viewer (>=1.0.0 <2.0.0) using only documented hooks (useDocumentContext, useZoomContext, usePaginationContext, etc.) — replace RPDefaultLayout entirely.
+description: Build a fully headless / custom layout for @react-pdf-kit/viewer (>=1.0.0 <2.0.0) using only documented hooks (useDocumentContext, useZoomContext, usePaginationContext, etc.), replacing RPLayout entirely.
 metadata:
   react_pdf_kit_version: ">=1.0.0 <2.0.0"
   pdfjs_dist_version: ">=5.0.0 <6.0.0"
@@ -11,20 +11,21 @@ metadata:
 # react-pdf-kit-custom-layout
 
 **Use this skill when**: the developer asks to replace the default
-viewer layout entirely with their own — embedded inline preview, a
-sidebar-only minimal reader, an enterprise UI with a custom toolbar
-on the side instead of the top, etc. For small toolbar tweaks while
-keeping the default layout, use `react-pdf-kit-toolbar-customization`.
+viewer layout entirely with their own. Examples: embedded inline
+preview, a sidebar-only minimal reader, an enterprise UI with a
+custom toolbar on the side instead of the top. For small toolbar
+tweaks while keeping the default layout, use
+`react-pdf-kit-toolbar-customization`.
 
-The viewer is composable: `RPProvider` and `RPPages` are the minimum
-required. Everything else (`RPDefaultLayout`, `RPTheme`, individual
-toolbar tools) can be swapped or omitted. State and actions are
-exposed via documented hooks.
+The viewer is composable. `RPProvider` and `RPPages` are the minimum
+required. Everything else (`RPLayout`, `RPTheme`, individual toolbar
+tools) can be swapped or omitted. State and actions are exposed via
+documented hooks.
 
 ## Gotchas
 
 - **`RPProvider` and `RPPages` are required.** `RPProvider` mounts
-  the document and makes the contexts available; `RPPages` renders
+  the document and makes the contexts available. `RPPages` renders
   the virtualized page list. Removing either breaks the viewer.
 - **Use only documented hooks.** Reaching into internal contexts via
   `React.useContext(InternalContext)` is unsupported and will break
@@ -37,13 +38,19 @@ exposed via documented hooks.
   ancestor that doesn't have a measurable height (no `flex: 1` /
   `min-height: 0`, no fixed height) makes the virtualizer mount with
   0 rows. Always give it a real viewport.
-- **Provider order matters.** `RPConfig` must be outermost,
-  `RPProvider` next, `RPTheme` (optional but harmless) inside that.
+- **Provider order matters.** `RPConfig` must be outermost, then
+  `RPProvider`, then `RPTheme` (optional but harmless) inside that.
   Anywhere inside `RPProvider` you can call the hooks.
 - **`RPTheme` is still recommended** even in custom layouts. It
   provides CSS custom properties that built-in components (page
   layers, text selection highlight) read. Skipping it works visually
   but loses dark-mode and theming.
+- **Note on `RPLayout` vs `RPDefaultLayout`**: this skill *replaces*
+  the default layout component, so neither appears in the final
+  composition. Older code that imports `RPDefaultLayout` should
+  migrate to `RPLayout` first (it is deprecated in
+  `@react-pdf-kit/viewer` v2.0.0) before headless migration, so the
+  two refactors don't get tangled.
 
 ## Procedure
 
@@ -73,7 +80,7 @@ export function HeadlessPdfViewer({ src }: { src: string }) {
 ```
 
 `CustomShell` (next step) is where YOU place `RPPages` next to your
-own toolbar / sidebar / status bar.
+own toolbar, sidebar, or status bar.
 
 ### 2. Build the shell using documented hooks
 
@@ -112,7 +119,7 @@ export function CustomShell() {
           borderBottom: '1px solid var(--rp-border, #e5e7eb)',
         }}
       >
-        <span>{isLoading ? 'Loading…' : `${numPages} pages`}</span>
+        <span>{isLoading ? 'Loading...' : `${numPages} pages`}</span>
         <button
           type="button"
           onClick={() => setZoom(zoom + 0.1)}
@@ -125,7 +132,7 @@ export function CustomShell() {
           onClick={() => setZoom(zoom - 0.1)}
           aria-label="Zoom out"
         >
-          −
+          -
         </button>
         <span style={{ flex: 1 }} />
         <button
@@ -133,7 +140,7 @@ export function CustomShell() {
           onClick={toggleDarkMode}
           aria-pressed={isDarkMode}
         >
-          {isDarkMode ? '☼ Light' : '☾ Dark'}
+          {isDarkMode ? 'Light' : 'Dark'}
         </button>
       </header>
 
@@ -171,20 +178,20 @@ parent has a measurable height.
 
 ### 3. Memoize where it matters
 
-If you compute derived state to pass into `RPProvider` (e.g., a
-file-loading callback or options object), memoize it. The provider
+If you compute derived state to pass into `RPProvider` (for example,
+a file-loading callback or options object), memoize it. The provider
 re-renders all children on identity changes, so a new object every
 render disables virtualization gains.
 
 ```tsx
 const options = useMemo(() => ({ withCredentials: true }), [])
-return <RPProvider src={src} options={options}>…</RPProvider>
+return <RPProvider src={src} options={options}>...</RPProvider>
 ```
 
 ### 4. (Optional) Add search, rotation, view modes
 
-Same pattern: import the hook, call it, render UI bound to its
-state/actions. `useSearchContext`, `useHighlightContext`,
+Same pattern: import the hook, call it, render UI bound to its state
+and actions. `useSearchContext`, `useHighlightContext`,
 `useRotationContext`, `useViewModeContext` are all documented.
 
 ## Verify
@@ -202,13 +209,13 @@ Open the page. Confirm:
   `aria-current` indicator).
 - Zoom buttons resize pages without remounting the viewer.
 - Dark-mode toggle flips the theme.
-- Scrolling still virtualizes — only mounted pages should be in the
-  DOM (DevTools → Elements; `RPPages` should render a windowed
-  subset).
+- Scrolling still virtualizes. Only mounted pages should be in the
+  DOM (DevTools, Elements panel: `RPPages` should render a windowed
+  subset, not all pages at once).
 
 ## References
 
 - Companion skills:
-  - `react-pdf-kit-setup` — first-time setup.
-  - `react-pdf-kit-toolbar-customization` — for keeping the default
+  - `react-pdf-kit-setup`: first-time setup.
+  - `react-pdf-kit-toolbar-customization`: for keeping the default
     layout but tweaking toolbar contents.

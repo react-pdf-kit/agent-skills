@@ -11,7 +11,7 @@ metadata:
 # react-pdf-kit-worker-config
 
 **Use this skill when**: the developer asks how to configure the
-PDF.js worker URL — for example, behind a strict CSP that blocks
+PDF.js worker URL. For example, behind a strict CSP that blocks
 inline blob workers, hosting the worker on a CDN, working around an
 asset-pipeline rewrite, or debugging a 404 on `pdf.worker.min.mjs`.
 
@@ -57,7 +57,8 @@ GlobalWorkerOptions.workerSrc = new URL(
 ```
 
 Run this at app entry (or, on Next.js, inside a `useEffect` of a
-Client Component — see `react-pdf-kit-nextjs-app-router`).
+Client Component). See `react-pdf-kit-nextjs-app-router` for the
+Next.js variant.
 
 ### Alternative A: CDN-hosted worker
 
@@ -117,9 +118,9 @@ pnpm dev   # or your equivalent serve step
 In the browser DevTools Network tab, filter for `pdf.worker`. You
 should see exactly **one** request, status 200, with a content-type
 of `application/javascript` (or `text/javascript`). Then open a PDF
-in the viewer and observe text selection works on a rendered page —
-this confirms the worker is responding to PDF.js's text-extraction
-calls.
+in the viewer and observe that text selection works on a rendered
+page. That confirms the worker is responding to PDF.js's
+text-extraction calls.
 
 ## References
 
@@ -127,7 +128,7 @@ calls.
 - Vite worker imports: <https://vitejs.dev/guide/assets.html#new-url-url-import-meta-url>
 - MDN `worker-src`: <https://developer.mozilla.org/docs/Web/HTTP/Headers/Content-Security-Policy/worker-src>
 - Companion skills:
-  - `react-pdf-kit-setup` — first-time setup.
-  - `react-pdf-kit-vite` / `react-pdf-kit-nextjs-app-router` /
-    `react-pdf-kit-nextjs-pages-router` — framework-specific worker
+  - `react-pdf-kit-setup`: first-time setup.
+  - `react-pdf-kit-vite`, `react-pdf-kit-nextjs-app-router`, and
+    `react-pdf-kit-nextjs-pages-router`: framework-specific worker
     setup.

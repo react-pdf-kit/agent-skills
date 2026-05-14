@@ -21,7 +21,7 @@ specifics are the worker URL and (optionally) a tweak to
 
 ## Gotchas
 
-- **Use `new URL(..., import.meta.url)` for the worker URL** — Vite
+- **Use `new URL(..., import.meta.url)` for the worker URL**. Vite
   recognizes this pattern and emits the worker file as a fingerprinted
   asset both in dev and production. Hardcoding `/pdf.worker.js`
   silently fails because Vite does not serve `node_modules/` assets at
@@ -35,7 +35,9 @@ specifics are the worker URL and (optionally) a tweak to
   every file change, which is harmless but noisy.
 - **CSS injection**: the library's PostCSS plugin auto-injects styles
   via Vite's standard CSS pipeline. Do NOT also import a separate
-  stylesheet — you'll get duplicates.
+  stylesheet, or you'll get duplicates.
+- **`RPDefaultLayout` is deprecated** as of `@react-pdf-kit/viewer`
+  v2.0.0. Use `RPLayout` for every new integration.
 
 ## Procedure
 
@@ -69,8 +71,8 @@ createRoot(document.getElementById('root')!).render(
 )
 ```
 
-The `import './pdfjs-worker'` is a side-effect import; the order
-matters — it must come before any `App` import that mounts the viewer.
+The `import './pdfjs-worker'` is a side-effect import. Order matters:
+it must come before any `App` import that mounts the viewer.
 
 ### 3. Render the viewer
 
@@ -79,8 +81,7 @@ matters — it must come before any `App` import that mounts the viewer.
 import {
   RPConfig,
   RPProvider,
-  RPTheme,
-  RPDefaultLayout,
+  RPLayout,
   RPPages,
 } from '@react-pdf-kit/viewer'
 
@@ -88,11 +89,9 @@ export function PdfViewer({ src }: { src: string }) {
   return (
     <RPConfig>
       <RPProvider src={src}>
-        <RPTheme>
-          <RPDefaultLayout>
-            <RPPages />
-          </RPDefaultLayout>
-        </RPTheme>
+        <RPLayout>
+          <RPPages />
+        </RPLayout>
       </RPProvider>
     </RPConfig>
   )
@@ -131,7 +130,7 @@ pnpm dev
 ```
 
 Open the dev server URL. The first PDF page should render with the
-default toolbar. Open DevTools Network tab — confirm
+default toolbar. Open DevTools Network tab and confirm
 `pdf.worker.min.mjs` is fetched from a Vite-emitted, fingerprinted
 asset URL (the path begins with `/assets/` and ends in `.mjs` with a
 hash segment in between). Test text selection on a rendered page to
@@ -142,6 +141,6 @@ confirm the text layer mounted.
 - Vite worker imports: <https://vitejs.dev/guide/assets.html#new-url-url-import-meta-url>
 - PDF.js worker setup: <https://github.com/mozilla/pdf.js/wiki/Setup-PDF.js-in-a-website>
 - Companion skills:
-  - `react-pdf-kit-setup` — generic React fundamentals.
-  - `react-pdf-kit-worker-config` — for advanced worker URL
+  - `react-pdf-kit-setup`: generic React fundamentals.
+  - `react-pdf-kit-worker-config`: for advanced worker URL
     strategies (CDN-hosted worker, locked-down CSP, etc.).

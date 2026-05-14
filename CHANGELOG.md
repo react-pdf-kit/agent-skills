@@ -19,13 +19,25 @@ range under a **Validated against** line.
 
 ## [Unreleased]
 
-**Validated against**: `@react-pdf-kit/viewer` *TBD on first release.*
+(No changes yet since v1.0.0-beta.0.)
+
+## [1.0.0-beta.0] - 2026-05-14
+
+First public pre-release for testing. The catalog and verification
+scripts are feature-complete for v1, but the live build-verification
+trials documented in the spec (T026 through T031, T033, T041) have
+not yet been executed end to end against real `pnpm create next-app`
+and `pnpm create vite` projects. Feedback wanted on skill accuracy,
+agent activation behavior, and the install workflow before promoting
+to v1.0.0.
+
+**Validated against**: `@react-pdf-kit/viewer` `>=1.0.0 <2.0.0`
 
 ### Added
 
 - Initial scaffolding: LICENSE (MIT), README, MAINTENANCE,
   .gitignore. (CONTRIBUTING and CODEOWNERS were authored and then
-  removed before first release — see Removed below.)
+  removed before first release. See Removed below.)
 - Conformance scripts: `scripts/verify-skill.sh`,
   `scripts/verify-all.sh`, `scripts/apply-skill-to-sample.sh`,
   `scripts/check-changelog.sh`.
@@ -45,7 +57,20 @@ range under a **Validated against** line.
 
 ### Changed
 
-- (none yet)
+- All skills and the README now teach `RPLayout` as the canonical
+  layout component. `RPDefaultLayout` is deprecated in
+  `@react-pdf-kit/viewer` v2.0.0 and will be removed in a future
+  release. Each affected skill (setup, vite, nextjs-app-router,
+  nextjs-pages-router, toolbar-customization, custom-layout) ships
+  an explicit Gotcha entry calling out the deprecation, and the
+  toolbar-customization skill is rewritten to teach
+  `RPLayout`'s `toolbar` prop with `RPHorizontalBar` /
+  `RPVerticalBar` slot customization. The "fully custom bar"
+  fallback (composing individual `*Tool` exports) is preserved as
+  step 4 of that skill.
+- Catalog prose (SKILL.md bodies, README, CLAUDE.md, MAINTENANCE.md)
+  no longer uses the em dash character. Voice tightened across all
+  authored content.
 
 ### Deprecated
 
