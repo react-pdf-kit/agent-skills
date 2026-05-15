@@ -19,7 +19,31 @@ range under a **Validated against** line.
 
 ## [Unreleased]
 
-(No changes yet since v1.0.0-beta.1.)
+(No changes yet since v1.0.0-beta.2.)
+
+## [1.0.0-beta.2] - 2026-05-15
+
+README polish on top of `v1.0.0-beta.1`.
+
+**Validated against**: `@react-pdf-kit/viewer` `>=1.0.0 <2.0.0`
+
+### Changed
+
+- `README.md` Skill Catalog table no longer carries the
+  `React PDF Kit` and `pdfjs-dist` version-range columns. Seven of
+  the eight catalog rows showed identical ranges, so the columns
+  were noise. The override skill's distinct `pdfjs-dist` v4
+  dependency is still surfaced through its own description in the
+  table and through the dedicated Troubleshooting section. Per-skill
+  compatibility ranges remain machine-readable in each skill's YAML
+  frontmatter (`metadata.react_pdf_kit_version` and
+  `metadata.pdfjs_dist_version`), which is the canonical source of
+  truth.
+
+### Catalog content
+
+(No skill content changes since `v1.0.0-beta.1`. All eight skills,
+sample scaffolds, scripts, and CI workflows ship unchanged.)
 
 ## [1.0.0-beta.1] - 2026-05-14
 

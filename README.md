@@ -68,18 +68,21 @@ ask about React PDF Kit. Example prompt: *"Add a PDF viewer for
 ## Skill Catalog
 
 The catalog is populated as skills are merged. Each row links to the
-skill's `SKILL.md` and shows its supported library version range.
+skill's `SKILL.md`. Per-skill compatibility (React PDF Kit and
+`pdfjs-dist` version ranges) lives in each skill's YAML frontmatter
+under `metadata.react_pdf_kit_version` and
+`metadata.pdfjs_dist_version`.
 
-| Skill | Description | React PDF Kit | pdfjs-dist |
-|-------|-------------|---------------|------------|
-| [`react-pdf-kit-setup`](./skills/react-pdf-kit-setup/SKILL.md) | Set up @react-pdf-kit/viewer in a generic React app, including PDF.js worker setup and the canonical provider chain. | `>=1.0.0 <2.0.0` | `>=5.0.0 <6.0.0` |
-| [`react-pdf-kit-nextjs-app-router`](./skills/react-pdf-kit-nextjs-app-router/SKILL.md) | Integrate @react-pdf-kit/viewer into a Next.js App Router project, including PDF.js worker configuration. | `>=1.0.0 <2.0.0` | `>=5.0.0 <6.0.0` |
-| [`react-pdf-kit-nextjs-pages-router`](./skills/react-pdf-kit-nextjs-pages-router/SKILL.md) | Integrate @react-pdf-kit/viewer into a Next.js Pages Router project with SSR-safe dynamic import. | `>=1.0.0 <2.0.0` | `>=5.0.0 <6.0.0` |
-| [`react-pdf-kit-vite`](./skills/react-pdf-kit-vite/SKILL.md) | Integrate @react-pdf-kit/viewer into a Vite project, including the PDF.js worker import. | `>=1.0.0 <2.0.0` | `>=5.0.0 <6.0.0` |
-| [`react-pdf-kit-worker-config`](./skills/react-pdf-kit-worker-config/SKILL.md) | Configure the PDF.js worker URL across supported bundlers (Vite, Turbopack, webpack, Next.js App Router). | `>=1.0.0 <2.0.0` | `>=5.0.0 <6.0.0` |
-| [`react-pdf-kit-toolbar-customization`](./skills/react-pdf-kit-toolbar-customization/SKILL.md) | Add, remove, or replace individual toolbar tools while preserving Radix-based accessibility. | `>=1.0.0 <2.0.0` | `>=5.0.0 <6.0.0` |
-| [`react-pdf-kit-custom-layout`](./skills/react-pdf-kit-custom-layout/SKILL.md) | Build a headless / custom layout for the viewer using only the documented hooks. | `>=1.0.0 <2.0.0` | `>=5.0.0 <6.0.0` |
-| [`react-pdf-kit-nextjs14-pdfjs-override`](./skills/react-pdf-kit-nextjs14-pdfjs-override/SKILL.md) | Override pdfjs-dist to v4 to work around the Next.js 14 webpack ESM interop bug. | `>=1.0.0 <2.0.0` | `>=4.0.0 <5.0.0` |
+| Skill | Description |
+|-------|-------------|
+| [`react-pdf-kit-setup`](./skills/react-pdf-kit-setup/SKILL.md) | Set up `@react-pdf-kit/viewer` in a generic React app, including PDF.js worker setup and the canonical provider chain. |
+| [`react-pdf-kit-nextjs-app-router`](./skills/react-pdf-kit-nextjs-app-router/SKILL.md) | Integrate `@react-pdf-kit/viewer` into a Next.js App Router project, including PDF.js worker configuration. |
+| [`react-pdf-kit-nextjs-pages-router`](./skills/react-pdf-kit-nextjs-pages-router/SKILL.md) | Integrate `@react-pdf-kit/viewer` into a Next.js Pages Router project with SSR-safe dynamic import. |
+| [`react-pdf-kit-vite`](./skills/react-pdf-kit-vite/SKILL.md) | Integrate `@react-pdf-kit/viewer` into a Vite project, including the PDF.js worker import. |
+| [`react-pdf-kit-worker-config`](./skills/react-pdf-kit-worker-config/SKILL.md) | Configure the PDF.js worker URL across supported bundlers (Vite, Turbopack, webpack, Next.js App Router). |
+| [`react-pdf-kit-toolbar-customization`](./skills/react-pdf-kit-toolbar-customization/SKILL.md) | Add, remove, or replace individual toolbar tools while preserving Radix-based accessibility. |
+| [`react-pdf-kit-custom-layout`](./skills/react-pdf-kit-custom-layout/SKILL.md) | Build a headless / custom layout for the viewer using only the documented hooks. |
+| [`react-pdf-kit-nextjs14-pdfjs-override`](./skills/react-pdf-kit-nextjs14-pdfjs-override/SKILL.md) | Override `pdfjs-dist` to v4 to work around the Next.js 14 webpack ESM interop bug. |
 
 ## Troubleshooting
 
@@ -99,8 +102,7 @@ via a package-manager override and the build will succeed.
 ## When things go wrong
 
 These behaviors are governed by the upstream
-[vercel-labs/skills](https://github.com/vercel-labs/skills) CLI; reading
-them here helps you interpret errors quickly.
+[vercel-labs/skills](https://github.com/vercel-labs/skills) CLI; reading them here helps you interpret errors quickly.
 
 - **`no matching skill` after `npx skills add <name>`**: the name is
   wrong or the skill has been renamed. Symptom: CLI exits non-zero with
