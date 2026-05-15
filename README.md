@@ -53,17 +53,17 @@ Cursor / OpenCode / Codex). Add `-g` for global installation.
 ### 3. Ask your agent
 
 With the skill installed, your agent activates it automatically when you
-ask about React PDF Kit. Example prompt: *"Add a PDF viewer for
-`report.pdf` to my Next.js project."*
+ask about React PDF Kit. Example prompt: _"Add a PDF viewer for
+`report.pdf` to my Next.js project."_
 
 ### Other package managers
 
-| Tool | Invocation |
-|------|------------|
-| npm | `npx skills add …` |
-| pnpm | `pnpm dlx skills add …` |
+| Tool       | Invocation              |
+| ---------- | ----------------------- |
+| npm        | `npx skills add …`      |
+| pnpm       | `pnpm dlx skills add …` |
 | yarn (1.x) | `yarn dlx skills add …` |
-| bun | `bunx skills add …` |
+| bun        | `bunx skills add …`     |
 
 ## Skill Catalog
 
@@ -73,23 +73,23 @@ skill's `SKILL.md`. Per-skill compatibility (React PDF Kit and
 under `metadata.react_pdf_kit_version` and
 `metadata.pdfjs_dist_version`.
 
-| Skill | Description |
-|-------|-------------|
-| [`react-pdf-kit-setup`](./skills/react-pdf-kit-setup/SKILL.md) | Set up `@react-pdf-kit/viewer` in a generic React app, including PDF.js worker setup and the canonical provider chain. |
-| [`react-pdf-kit-nextjs-app-router`](./skills/react-pdf-kit-nextjs-app-router/SKILL.md) | Integrate `@react-pdf-kit/viewer` into a Next.js App Router project, including PDF.js worker configuration. |
-| [`react-pdf-kit-nextjs-pages-router`](./skills/react-pdf-kit-nextjs-pages-router/SKILL.md) | Integrate `@react-pdf-kit/viewer` into a Next.js Pages Router project with SSR-safe dynamic import. |
-| [`react-pdf-kit-vite`](./skills/react-pdf-kit-vite/SKILL.md) | Integrate `@react-pdf-kit/viewer` into a Vite project, including the PDF.js worker import. |
-| [`react-pdf-kit-worker-config`](./skills/react-pdf-kit-worker-config/SKILL.md) | Configure the PDF.js worker URL across supported bundlers (Vite, Turbopack, webpack, Next.js App Router). |
-| [`react-pdf-kit-toolbar-customization`](./skills/react-pdf-kit-toolbar-customization/SKILL.md) | Add, remove, or replace individual toolbar tools while preserving Radix-based accessibility. |
-| [`react-pdf-kit-custom-layout`](./skills/react-pdf-kit-custom-layout/SKILL.md) | Build a headless / custom layout for the viewer using only the documented hooks. |
-| [`react-pdf-kit-nextjs14-pdfjs-override`](./skills/react-pdf-kit-nextjs14-pdfjs-override/SKILL.md) | Override `pdfjs-dist` to v4 to work around the Next.js 14 webpack ESM interop bug. |
+| Skill                                                                                              | Description                                                                                                            |
+| -------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| [`react-pdf-kit-setup`](./skills/react-pdf-kit-setup/SKILL.md)                                     | Set up `@react-pdf-kit/viewer` in a generic React app, including PDF.js worker setup and the canonical provider chain. |
+| [`react-pdf-kit-nextjs-app-router`](./skills/react-pdf-kit-nextjs-app-router/SKILL.md)             | Integrate `@react-pdf-kit/viewer` into a Next.js App Router project, including PDF.js worker configuration.            |
+| [`react-pdf-kit-nextjs-pages-router`](./skills/react-pdf-kit-nextjs-pages-router/SKILL.md)         | Integrate `@react-pdf-kit/viewer` into a Next.js Pages Router project with SSR-safe dynamic import.                    |
+| [`react-pdf-kit-vite`](./skills/react-pdf-kit-vite/SKILL.md)                                       | Integrate `@react-pdf-kit/viewer` into a Vite project, including the PDF.js worker import.                             |
+| [`react-pdf-kit-worker-config`](./skills/react-pdf-kit-worker-config/SKILL.md)                     | Configure the PDF.js worker URL across supported bundlers (Vite, Turbopack, webpack, Next.js App Router).              |
+| [`react-pdf-kit-toolbar-customization`](./skills/react-pdf-kit-toolbar-customization/SKILL.md)     | Add, remove, or replace individual toolbar tools while preserving Radix-based accessibility.                           |
+| [`react-pdf-kit-custom-layout`](./skills/react-pdf-kit-custom-layout/SKILL.md)                     | Build a headless / custom layout for the viewer using only the documented hooks.                                       |
+| [`react-pdf-kit-nextjs14-pdfjs-override`](./skills/react-pdf-kit-nextjs14-pdfjs-override/SKILL.md) | Override `pdfjs-dist` to v4 to work around the Next.js 14 webpack ESM interop bug.                                     |
 
 ## Troubleshooting
 
 ### Next.js 14 build fails with `TypeError: Object.defineProperty called on non-object`
 
 This is the documented Next.js 14 + `pdfjs-dist@5` webpack ESM interop
-bug ([wojtekmaj/react-pdf#1699](https://github.com/wojtekmaj/react-pdf/issues/1699)).
+bug.
 Install the override skill:
 
 ```bash
@@ -118,7 +118,7 @@ These behaviors are governed by the upstream
   decline and uninstall the existing copy first with
   `npx skills remove <name>`.
 
-For issues with the *content* of a skill (incorrect code, missing
+For issues with the _content_ of a skill (incorrect code, missing
 gotchas, stale version range), open an issue in this repository.
 
 ## How an AI agent discovers and uses this repo
