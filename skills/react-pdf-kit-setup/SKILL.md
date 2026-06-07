@@ -1,8 +1,8 @@
 ---
 name: react-pdf-kit-setup
-description: Set up @react-pdf-kit/viewer in a generic React app (>=1.0.0 <2.0.0), including PDF.js worker configuration and the canonical RPConfig, RPProvider, RPLayout, RPPages provider chain.
+description: Set up @react-pdf-kit/viewer in a generic React app (>=2.0.0 <3.0.0) using the canonical RPConfig, RPProvider, RPLayout, RPPages provider chain.
 metadata:
-  react_pdf_kit_version: ">=1.0.0 <2.0.0"
+  react_pdf_kit_version: ">=2.0.0 <3.0.0"
   pdfjs_dist_version: ">=5.0.0 <6.0.0"
   frameworks: [react]
   tags: [setup, pdf-viewer, getting-started]
@@ -13,7 +13,7 @@ metadata:
 **Use this skill when**: the developer asks to add a PDF viewer using
 `@react-pdf-kit/viewer` to a React project, AND the project is *not*
 specifically Next.js or Vite. For those, prefer the framework-specific
-skills, since they cover bundler details this skill does not.
+skills.
 
 `@react-pdf-kit/viewer` builds on PDF.js and renders PDFs through a
 nested provider chain. Treat the chain as the canonical composition
@@ -21,64 +21,37 @@ model. Everything else (theming, layout, hooks) layers onto it.
 
 ## Gotchas
 
-- **`pdfjs-dist` is a peer dependency**, not bundled. The host project
-  MUST install it explicitly. Default supported version: `5.4.530`.
-- **`pdfjs-dist@5` is ESM-only**. Modern bundlers handle it. Legacy
-  CommonJS-only environments do not. If the host is Next.js 14 with
-  webpack, use `react-pdf-kit-nextjs14-pdfjs-override` instead. Do
-  NOT pin `pdfjs-dist@5` there.
-- **The PDF.js worker MUST run in a Web Worker**, not on the main
-  thread. The standard pattern below uses `new URL(...,
-  import.meta.url)` so the bundler emits the worker as a separate
-  asset.
-- **CSS is auto-injected** by the library's PostCSS plugin. Do NOT
-  import a separate stylesheet unless you are customizing themes via
-  `RPTheme`.
-- **`react`, `react-dom`, and `pdfjs-dist` are peer dependencies**.
-  They are NOT bundled. Do not duplicate them in your bundle.
-- **`RPDefaultLayout` is deprecated** as of `@react-pdf-kit/viewer`
-  v2.0.0 and will be removed in a future release. Use `RPLayout` for
-  every new integration.
+- **Install only `@react-pdf-kit/viewer`. Do NOT install `pdfjs-dist`
+  separately.** In v2, `pdfjs-dist` is an auto-installed peer
+  dependency pinned to a default version (`5.4.530`). You install
+  `pdfjs-dist` yourself ONLY when deliberately overriding that version,
+  which is covered by `react-pdf-kit-worker-config`.
+- **`RPConfig` configures the PDF.js worker for you.** The worker is
+  set up automatically. Do NOT set `GlobalWorkerOptions.workerSrc` or
+  pass a `workerUrl`. Custom worker URLs are only needed when
+  overriding `pdfjs-dist`; see `react-pdf-kit-worker-config`.
+- **`RPConfig` belongs at the root and should be rendered once.** It
+  also wraps theming internally, so a separate `RPTheme` is optional.
+- **`licenseKey` on `RPConfig` is optional.** Without it the viewer
+  runs in free/trial mode (a watermark is shown). Pass
+  `<RPConfig licenseKey="...">` for licensed/commercial use.
+- **CSS is auto-injected** by the library. Do NOT import a separate
+  stylesheet.
+- **`RPDefaultLayout` is deprecated** in v2. Use `RPLayout` for every
+  new integration.
 
 ## Procedure
 
-### 1. Install peer dependencies
+### 1. Install the library
 
 ```bash
-pnpm add @react-pdf-kit/viewer pdfjs-dist@5.4.530
+pnpm add @react-pdf-kit/viewer
 ```
 
-(Use `npm install`, `yarn add`, or `bun add` if not on pnpm.)
+(Use `npm install`, `yarn add`, or `bun add` if not on pnpm.) Nothing
+else is required; `pdfjs-dist` is pulled in automatically.
 
-### 2. Configure the PDF.js worker once at app boot
-
-Pick the file your app boots from (for example `src/main.tsx`,
-`src/index.tsx`, or whichever entry your bundler runs first). Add the
-worker URL configuration before any viewer renders:
-
-```tsx
-// src/pdfjs-worker.ts
-import { GlobalWorkerOptions } from 'pdfjs-dist'
-
-GlobalWorkerOptions.workerSrc = new URL(
-  'pdfjs-dist/build/pdf.worker.min.mjs',
-  import.meta.url
-).toString()
-```
-
-```tsx
-// src/main.tsx
-import './pdfjs-worker'   // side-effect import; must come before viewer use
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import { App } from './App'
-
-createRoot(document.getElementById('root')!).render(
-  <StrictMode><App /></StrictMode>
-)
-```
-
-### 3. Render the viewer with the canonical provider chain
+### 2. Render the viewer with the canonical provider chain
 
 ```tsx
 // src/PdfViewer.tsx
@@ -93,7 +66,7 @@ export function PdfViewer({ src }: { src: string }) {
   return (
     <RPConfig>
       <RPProvider src={src}>
-        <RPLayout>
+        <RPLayout toolbar>
           <RPPages />
         </RPLayout>
       </RPProvider>
@@ -102,12 +75,12 @@ export function PdfViewer({ src }: { src: string }) {
 }
 ```
 
-`RPTheme` is optional. If the host wants explicit control over light
-or dark theming via the documented CSS variables, wrap `RPLayout` in
-`<RPTheme>...</RPTheme>`. Plain `RPConfig, RPProvider, RPLayout,
-RPPages` is the canonical minimum.
+`RPLayout`'s `toolbar` prop renders the default toolbar. `RPConfig` is
+the outermost wrapper and handles worker setup and theming. For
+explicit theme control, pass `customVariables` / `customDarkVariables`
+to `RPConfig` (or nest an `RPTheme`).
 
-### 4. Mount it
+### 3. Mount it
 
 ```tsx
 // src/App.tsx
@@ -122,9 +95,9 @@ export function App() {
 }
 ```
 
-The viewer requires a definite height to render correctly. Give the
-parent a fixed or `100vh` height so virtual scrolling has a viewport
-to work against.
+The viewer adapts to its container, so give the parent a definite
+height (`100vh` or fixed) for virtual scrolling to work. You can also
+size it directly via `RPLayout`'s `style` prop.
 
 ## Verify
 
@@ -142,9 +115,8 @@ text selection, not a canvas-only image.
 ## References
 
 - Library README: <https://github.com/react-pdf-kit/viewer>
-- PDF.js worker docs: <https://github.com/mozilla/pdf.js/wiki/Setup-PDF.js-in-a-website>
 - Companion skills:
   - `react-pdf-kit-nextjs-app-router` for Next.js App Router projects.
-  - `react-pdf-kit-vite` for Vite-specific worker integration.
-  - `react-pdf-kit-worker-config` for cross-bundler worker URL
-    details.
+  - `react-pdf-kit-vite` for Vite projects.
+  - `react-pdf-kit-worker-config` for overriding the `pdfjs-dist`
+    version and configuring a custom worker URL.

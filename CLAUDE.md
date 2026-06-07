@@ -64,7 +64,7 @@ scripts/check-changelog.sh v1.0.0
    name: react-pdf-kit-<topic>            # MUST equal the directory name
    description: <one sentence, ≤200 chars>
    metadata:
-     react_pdf_kit_version: ">=1.0.0 <2.0.0"
+     react_pdf_kit_version: ">=2.0.0 <3.0.0"
      pdfjs_dist_version: ">=5.0.0 <6.0.0"
      frameworks: [react]                  # optional; subset of [react, next.js, vite, webpack]
    ---
@@ -122,12 +122,16 @@ these five principles before merge.
 
 ## Compatibility
 
-- Default `pdfjs-dist`: **v5.4.530** (ESM-only). Works on Vite,
-  Turbopack, Next.js 13+/15, webpack 5.
-- **Next.js 14 + webpack** has the documented
-  [`pdfjs-dist@5` ESM bug](https://github.com/wojtekmaj/react-pdf/issues/1699).
-  Use the [`react-pdf-kit-nextjs14-pdfjs-override`](./skills/react-pdf-kit-nextjs14-pdfjs-override/SKILL.md)
-  skill to pin to v4.
+- `pdfjs-dist` is an **auto-installed peer dependency** (default
+  **v5.4.530**, ESM-only). Consumers install only
+  `@react-pdf-kit/viewer`; `pdfjs-dist` is installed separately only to
+  override the version. Works on Vite, Turbopack, Next.js 15, webpack 5.
+- **Next.js 14 is NOT supported by v2** (its webpack ESM interop breaks
+  `pdfjs-dist@5`, the
+  [documented bug](https://github.com/wojtekmaj/react-pdf/issues/1699)).
+  The [`react-pdf-kit-nextjs14-pdfjs-override`](./skills/react-pdf-kit-nextjs14-pdfjs-override/SKILL.md)
+  skill documents the two paths: upgrade to Next.js 15 (Turbopack), or
+  stay on Next.js 14 with the legacy `@pdf-viewer/react` package.
 
 ## Release flow
 

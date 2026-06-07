@@ -1,8 +1,8 @@
 ---
 name: react-pdf-kit-toolbar-customization
-description: Customize the @react-pdf-kit/viewer (>=1.0.0 <2.0.0) toolbar using the RPLayout toolbar prop with RPHorizontalBar / RPVerticalBar, or compose individual tool exports for a fully custom bar. Preserves Radix-based accessibility.
+description: Customize the @react-pdf-kit/viewer (>=2.0.0 <3.0.0) toolbar using the RPLayout toolbar prop with RPHorizontalBar / RPVerticalBar, or compose individual tool exports for a fully custom bar. Preserves Radix-based accessibility.
 metadata:
-  react_pdf_kit_version: ">=1.0.0 <2.0.0"
+  react_pdf_kit_version: ">=2.0.0 <3.0.0"
   pdfjs_dist_version: ">=5.0.0 <6.0.0"
   frameworks: [react, next.js, vite]
   tags: [pdf-viewer, toolbar, customization, accessibility]
@@ -27,10 +27,9 @@ your own container.
 
 ## Gotchas
 
-- **`RPDefaultLayout` is deprecated** as of `@react-pdf-kit/viewer`
-  v2.0.0. Use `RPLayout` with the structured `toolbar` prop. Older
-  examples that pass `slots` and `icons` directly to
-  `RPDefaultLayout` should migrate.
+- **`RPDefaultLayout` is deprecated** in v2. Use `RPLayout` with the
+  structured `toolbar` prop. Older examples that pass `slots` and
+  `icons` directly to `RPDefaultLayout` should migrate.
 - **The recommended customization API is `RPHorizontalBar` /
   `RPVerticalBar`**, not bypassing `RPLayout` entirely. Bypassing
   `RPLayout` is reserved for fully custom shells (see step 4).
@@ -69,7 +68,7 @@ export function PdfViewer({ src }: { src: string }) {
   return (
     <RPConfig>
       <RPProvider src={src}>
-        <RPLayout>
+        <RPLayout toolbar>
           <RPPages />
         </RPLayout>
       </RPProvider>
@@ -77,6 +76,10 @@ export function PdfViewer({ src }: { src: string }) {
   )
 }
 ```
+
+`<RPLayout toolbar>` (the boolean form) renders the default top bar and
+left sidebar. The structured `toolbar={{ ... }}` form below customizes
+them.
 
 ### 2. Partial customization (hide / show individual tools)
 

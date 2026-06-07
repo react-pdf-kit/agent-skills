@@ -1,80 +1,47 @@
 ---
 name: react-pdf-kit-vite
-description: Integrate @react-pdf-kit/viewer (>=1.0.0 <2.0.0) into a Vite 5 project, including the PDF.js worker import via new URL(...) and ESM-aware vite.config.ts.
+description: Integrate @react-pdf-kit/viewer (>=2.0.0 <3.0.0) into a Vite 5 React project. Vite needs no special configuration; the viewer works out of the box.
 metadata:
-  react_pdf_kit_version: ">=1.0.0 <2.0.0"
+  react_pdf_kit_version: ">=2.0.0 <3.0.0"
   pdfjs_dist_version: ">=5.0.0 <6.0.0"
   frameworks: [vite, react]
-  tags: [vite, pdf-viewer, esm, worker]
+  tags: [vite, pdf-viewer, esm]
 ---
 
 # react-pdf-kit-vite
 
 **Use this skill when**: the developer asks to add a PDF viewer using
 `@react-pdf-kit/viewer` to a **Vite-based React project**. For Next.js
-use the framework-specific skills. For generic React projects without
-Vite-specific worker setup, the `react-pdf-kit-setup` skill is enough.
+use the framework-specific skills.
 
-Vite handles `pdfjs-dist@5` ESM-only out of the box. The only Vite
-specifics are the worker URL and (optionally) a tweak to
-`optimizeDeps` if the dev server pre-bundles `pdfjs-dist` slowly.
+Vite handles `pdfjs-dist`'s ESM-only build out of the box, and `RPConfig`
+sets up the PDF.js worker automatically. There is no Vite-specific
+setup: the generic provider chain is all you need.
 
 ## Gotchas
 
-- **Use `new URL(..., import.meta.url)` for the worker URL**. Vite
-  recognizes this pattern and emits the worker file as a fingerprinted
-  asset both in dev and production. Hardcoding `/pdf.worker.js`
-  silently fails because Vite does not serve `node_modules/` assets at
-  the root.
-- **Do not put `pdfjs-dist` under `optimizeDeps.exclude`** unless you
-  see real cold-start issues. Excluding it forces the browser to
-  resolve all PDF.js submodule imports per request, which is slower.
-- **Set worker config at app entry**, not inside the viewer
-  component, so the worker is initialized exactly once and before any
-  viewer mounts. Vite's HMR otherwise can re-run the configuration on
-  every file change, which is harmless but noisy.
-- **CSS injection**: the library's PostCSS plugin auto-injects styles
-  via Vite's standard CSS pipeline. Do NOT also import a separate
-  stylesheet, or you'll get duplicates.
-- **`RPDefaultLayout` is deprecated** as of `@react-pdf-kit/viewer`
-  v2.0.0. Use `RPLayout` for every new integration.
+- **Install only `@react-pdf-kit/viewer`. Do NOT install `pdfjs-dist`
+  separately.** It is an auto-installed peer dependency. You install
+  `pdfjs-dist` yourself only when overriding its version (see
+  `react-pdf-kit-worker-config`, which includes the Vite `?url` worker
+  recipe).
+- **No worker configuration is required.** `RPConfig` sets up the
+  PDF.js worker for you. Do NOT set `GlobalWorkerOptions.workerSrc` or
+  pass a `workerUrl` for the default case.
+- **CSS is auto-injected** by the library. Do NOT import a separate
+  stylesheet.
+- **`RPDefaultLayout` is deprecated** in v2. Use `RPLayout` for every
+  new integration.
 
 ## Procedure
 
-### 1. Install peer dependencies
+### 1. Install the library
 
 ```bash
-pnpm add @react-pdf-kit/viewer pdfjs-dist@5.4.530
+pnpm add @react-pdf-kit/viewer
 ```
 
-### 2. Configure the PDF.js worker once at entry
-
-```tsx
-// src/pdfjs-worker.ts
-import { GlobalWorkerOptions } from 'pdfjs-dist'
-
-GlobalWorkerOptions.workerSrc = new URL(
-  'pdfjs-dist/build/pdf.worker.min.mjs',
-  import.meta.url
-).toString()
-```
-
-```tsx
-// src/main.tsx
-import './pdfjs-worker'
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import { App } from './App'
-
-createRoot(document.getElementById('root')!).render(
-  <StrictMode><App /></StrictMode>
-)
-```
-
-The `import './pdfjs-worker'` is a side-effect import. Order matters:
-it must come before any `App` import that mounts the viewer.
-
-### 3. Render the viewer
+### 2. Render the viewer
 
 ```tsx
 // src/PdfViewer.tsx
@@ -89,7 +56,7 @@ export function PdfViewer({ src }: { src: string }) {
   return (
     <RPConfig>
       <RPProvider src={src}>
-        <RPLayout>
+        <RPLayout toolbar>
           <RPPages />
         </RPLayout>
       </RPProvider>
@@ -98,28 +65,26 @@ export function PdfViewer({ src }: { src: string }) {
 }
 ```
 
-### 4. (Optional) `vite.config.ts` tweak for PDF.js cold-start
+### 3. Mount it inside a definite-height container
 
-The default Vite config works. Only add this if dev-server cold-start
-is slow because Vite's pre-bundler is choking on `pdfjs-dist`'s many
-submodules:
+```tsx
+// src/App.tsx
+import { PdfViewer } from './PdfViewer'
 
-```ts
-// vite.config.ts
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-
-export default defineConfig({
-  plugins: [react()],
-  optimizeDeps: {
-    include: ['pdfjs-dist', 'pdfjs-dist/build/pdf.worker.min.mjs'],
-  },
-})
+export function App() {
+  return (
+    <main style={{ height: '100vh' }}>
+      <PdfViewer src="/sample.pdf" />
+    </main>
+  )
+}
 ```
 
-This pre-bundles `pdfjs-dist` once at startup instead of lazily, at
-the cost of a slower first dev-server boot. Most projects don't need
-this.
+The viewer adapts to its container, so give the parent a definite
+height (`100vh` or fixed), or size it via `RPLayout`'s `style` prop.
+
+To load a bundled PDF, import it (`import pdf from './doc.pdf'`) and
+pass it as `src`; Vite resolves the asset URL.
 
 ## Verify
 
@@ -130,17 +95,14 @@ pnpm dev
 ```
 
 Open the dev server URL. The first PDF page should render with the
-default toolbar. Open DevTools Network tab and confirm
-`pdf.worker.min.mjs` is fetched from a Vite-emitted, fingerprinted
-asset URL (the path begins with `/assets/` and ends in `.mjs` with a
-hash segment in between). Test text selection on a rendered page to
+default toolbar. Scroll to confirm pages mount as they enter the
+viewport (virtualization), and select text on a rendered page to
 confirm the text layer mounted.
 
 ## References
 
-- Vite worker imports: <https://vitejs.dev/guide/assets.html#new-url-url-import-meta-url>
-- PDF.js worker setup: <https://github.com/mozilla/pdf.js/wiki/Setup-PDF.js-in-a-website>
+- Vite asset handling: <https://vitejs.dev/guide/assets.html>
 - Companion skills:
   - `react-pdf-kit-setup`: generic React fundamentals.
-  - `react-pdf-kit-worker-config`: for advanced worker URL
-    strategies (CDN-hosted worker, locked-down CSP, etc.).
+  - `react-pdf-kit-worker-config`: for overriding the `pdfjs-dist`
+    version and configuring a custom worker URL (Vite `?url` recipe).

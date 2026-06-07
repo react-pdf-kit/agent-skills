@@ -75,29 +75,28 @@ under `metadata.react_pdf_kit_version` and
 
 | Skill                                                                                              | Description                                                                                                            |
 | -------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
-| [`react-pdf-kit-setup`](./skills/react-pdf-kit-setup/SKILL.md)                                     | Set up `@react-pdf-kit/viewer` in a generic React app, including PDF.js worker setup and the canonical provider chain. |
-| [`react-pdf-kit-nextjs-app-router`](./skills/react-pdf-kit-nextjs-app-router/SKILL.md)             | Integrate `@react-pdf-kit/viewer` into a Next.js App Router project, including PDF.js worker configuration.            |
+| [`react-pdf-kit-setup`](./skills/react-pdf-kit-setup/SKILL.md)                                     | Set up `@react-pdf-kit/viewer` in a generic React app using the canonical provider chain.                             |
+| [`react-pdf-kit-nextjs-app-router`](./skills/react-pdf-kit-nextjs-app-router/SKILL.md)             | Integrate `@react-pdf-kit/viewer` into a Next.js App Router project with a client boundary and dynamic import.        |
 | [`react-pdf-kit-nextjs-pages-router`](./skills/react-pdf-kit-nextjs-pages-router/SKILL.md)         | Integrate `@react-pdf-kit/viewer` into a Next.js Pages Router project with SSR-safe dynamic import.                    |
-| [`react-pdf-kit-vite`](./skills/react-pdf-kit-vite/SKILL.md)                                       | Integrate `@react-pdf-kit/viewer` into a Vite project, including the PDF.js worker import.                             |
-| [`react-pdf-kit-worker-config`](./skills/react-pdf-kit-worker-config/SKILL.md)                     | Configure the PDF.js worker URL across supported bundlers (Vite, Turbopack, webpack, Next.js App Router).              |
+| [`react-pdf-kit-vite`](./skills/react-pdf-kit-vite/SKILL.md)                                       | Integrate `@react-pdf-kit/viewer` into a Vite project (works out of the box, no special config).                      |
+| [`react-pdf-kit-worker-config`](./skills/react-pdf-kit-worker-config/SKILL.md)                     | Override the `pdfjs-dist` version and configure the worker via the `RPConfig` `workerUrl` prop (Vite, Turbopack, webpack). |
 | [`react-pdf-kit-toolbar-customization`](./skills/react-pdf-kit-toolbar-customization/SKILL.md)     | Add, remove, or replace individual toolbar tools while preserving Radix-based accessibility.                           |
 | [`react-pdf-kit-custom-layout`](./skills/react-pdf-kit-custom-layout/SKILL.md)                     | Build a headless / custom layout for the viewer using only the documented hooks.                                       |
-| [`react-pdf-kit-nextjs14-pdfjs-override`](./skills/react-pdf-kit-nextjs14-pdfjs-override/SKILL.md) | Override `pdfjs-dist` to v4 to work around the Next.js 14 webpack ESM interop bug.                                     |
+| [`react-pdf-kit-nextjs14-pdfjs-override`](./skills/react-pdf-kit-nextjs14-pdfjs-override/SKILL.md) | Next.js 14 compatibility: v2 is unsupported there — upgrade to Next.js 15 (Turbopack) or use the legacy package.        |
 
 ## Troubleshooting
 
 ### Next.js 14 build fails with `TypeError: Object.defineProperty called on non-object`
 
-This is the documented Next.js 14 + `pdfjs-dist@5` webpack ESM interop
-bug.
-Install the override skill:
+`@react-pdf-kit/viewer` v2 does **not** support Next.js 14 (its webpack
+ESM interop breaks `pdfjs-dist@5`). The supported paths are to upgrade
+to Next.js 15 (with Turbopack), or to stay on Next.js 14 with the
+legacy [`@pdf-viewer/react`](https://www.npmjs.com/package/@pdf-viewer/react)
+package. Install the compatibility skill for the full breakdown:
 
 ```bash
 npx skills add react-pdf-kit/agent-skills#react-pdf-kit-nextjs14-pdfjs-override
 ```
-
-Ask your agent to apply it; the agent will downgrade `pdfjs-dist` to v4
-via a package-manager override and the build will succeed.
 
 ## When things go wrong
 
@@ -136,10 +135,10 @@ $ pnpm create next-app@latest my-pdf-app -- --ts --eslint --app --no-tailwind --
 $ cd my-pdf-app
 
 $ npx skills find "react pdf kit next.js"
-react-pdf-kit-nextjs-app-router          Integrate @react-pdf-kit/viewer (>=1.0.0 <2.0.0) into a Next.js...
-react-pdf-kit-nextjs14-pdfjs-override    Override pdfjs-dist to v4 to work around the Next.js 14 + pdfjs-dist v5...
-react-pdf-kit-nextjs-pages-router        Integrate @react-pdf-kit/viewer (>=1.0.0 <2.0.0) into a Next.js Pages...
-react-pdf-kit-worker-config              Configure the PDF.js worker URL across supported bundlers...
+react-pdf-kit-nextjs-app-router          Integrate @react-pdf-kit/viewer (>=2.0.0 <3.0.0) into a Next.js...
+react-pdf-kit-nextjs14-pdfjs-override    Next.js 14 compatibility: v2 is unsupported there — upgrade to 15...
+react-pdf-kit-nextjs-pages-router        Integrate @react-pdf-kit/viewer (>=2.0.0 <3.0.0) into a Next.js Pages...
+react-pdf-kit-worker-config              Override the pdfjs-dist version and configure the worker URL...
 
 $ npx skills add react-pdf-kit/agent-skills#react-pdf-kit-nextjs-app-router
 Installed react-pdf-kit-nextjs-app-router into .claude/skills/
@@ -147,10 +146,10 @@ Installed react-pdf-kit-nextjs-app-router into .claude/skills/
 $ # Open Claude Code (or your agent of choice) and ask:
 > Add a PDF viewer to /document/[id] that loads /api/documents/[id].pdf.
 
-# Agent activates the skill, installs @react-pdf-kit/viewer + pdfjs-dist,
-# generates app/_components/PdfViewer.tsx with the canonical provider
-# chain and worker config, generates app/document/[id]/page.tsx with
-# the dynamic-import + ssr:false pattern, and runs `pnpm install` then
+# Agent activates the skill, installs @react-pdf-kit/viewer (pdfjs-dist
+# comes along as a peer dep), generates the client-only provider chain
+# (RPConfig handles the worker) and a page using the dynamic-import +
+# ssr:false pattern, then runs `pnpm install` then
 # `pnpm build`. Build is green; navigating to /document/test renders
 # the first PDF page.
 ```

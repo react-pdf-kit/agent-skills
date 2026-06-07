@@ -113,7 +113,7 @@ validate_semver_range() {
   # spread of versions so any reasonable range matches at least one.
   # An invalid range syntax causes `semver` to exit non-zero on every
   # probe.
-  local probes=(0.0.1 0.5.0 1.0.0 1.5.0 4.10.38 5.4.530 10.0.0 100.0.0 999.999.999)
+  local probes=(0.0.1 0.5.0 1.0.0 1.5.0 2.0.0 2.7.0 4.10.38 5.4.530 10.0.0 100.0.0 999.999.999)
   if ! npx --yes semver -r "$range" "${probes[@]}" >/dev/null 2>&1; then
     die 14 "R-14 $skill_md: $label is not a valid semver range: '$range'"
   fi

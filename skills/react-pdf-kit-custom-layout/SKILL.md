@@ -1,8 +1,8 @@
 ---
 name: react-pdf-kit-custom-layout
-description: Build a fully headless / custom layout for @react-pdf-kit/viewer (>=1.0.0 <2.0.0) using only documented hooks (useDocumentContext, useZoomContext, usePaginationContext, etc.), replacing RPLayout entirely.
+description: Build a fully headless / custom layout for @react-pdf-kit/viewer (>=2.0.0 <3.0.0) using only documented hooks (useDocumentContext, useZoomContext, usePaginationContext, etc.), replacing RPLayout entirely.
 metadata:
-  react_pdf_kit_version: ">=1.0.0 <2.0.0"
+  react_pdf_kit_version: ">=2.0.0 <3.0.0"
   pdfjs_dist_version: ">=5.0.0 <6.0.0"
   frameworks: [react, next.js, vite]
   tags: [pdf-viewer, headless, custom-layout, hooks]
@@ -48,9 +48,8 @@ documented hooks.
 - **Note on `RPLayout` vs `RPDefaultLayout`**: this skill *replaces*
   the default layout component, so neither appears in the final
   composition. Older code that imports `RPDefaultLayout` should
-  migrate to `RPLayout` first (it is deprecated in
-  `@react-pdf-kit/viewer` v2.0.0) before headless migration, so the
-  two refactors don't get tangled.
+  migrate to `RPLayout` first (`RPDefaultLayout` is deprecated in v2)
+  before headless migration, so the two refactors don't get tangled.
 
 ## Procedure
 

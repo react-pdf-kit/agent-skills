@@ -1,176 +1,92 @@
 ---
 name: react-pdf-kit-nextjs14-pdfjs-override
-description: Override pdfjs-dist to v4 to work around the Next.js 14 + pdfjs-dist v5 webpack ESM interop bug (TypeError Object.defineProperty called on non-object) so @react-pdf-kit/viewer (>=1.0.0 <2.0.0) builds and runs.
+description: Explains that @react-pdf-kit/viewer (>=2.0.0 <3.0.0) does not support Next.js 14, and the two supported paths forward — upgrade to Next.js 15 (Turbopack) or stay on the legacy @pdf-viewer/react package.
 metadata:
-  react_pdf_kit_version: ">=1.0.0 <2.0.0"
-  pdfjs_dist_version: ">=4.0.0 <5.0.0"
+  react_pdf_kit_version: ">=2.0.0 <3.0.0"
+  pdfjs_dist_version: ">=5.0.0 <6.0.0"
   frameworks: [next.js, webpack]
-  tags: [next.js, pdfjs, esm, override, troubleshooting]
+  tags: [next.js, pdfjs, esm, compatibility, troubleshooting]
 ---
 
 # react-pdf-kit-nextjs14-pdfjs-override
 
-**Use this skill when**: a Next.js 14 build (or runtime) fails with
+**Use this skill when**: a project is on **Next.js 14** and either wants
+to use `@react-pdf-kit/viewer` v2 or is hitting a `pdfjs-dist`
+module-load error such as
 
 ```
 TypeError: Object.defineProperty called on non-object
 ```
 
-(or any module-load error originating from `pdfjs-dist@5`'s ESM
-import chain) AND the project uses Next.js 14 with the default
-webpack bundler. Apply this skill BEFORE the framework-specific
-Next.js skills.
+during a Next.js 14 build or runtime.
 
-For Next.js 13, Next.js 15, or Next.js 14 with Turbopack: this skill
-is NOT needed; use `react-pdf-kit-nextjs-app-router` or
-`react-pdf-kit-nextjs-pages-router` directly with `pdfjs-dist@5`.
+## The key fact: v2 does not support Next.js 14
 
-## Why this exists
+`@react-pdf-kit/viewer@^2.0.0` does **not** work on Next.js 14. Next.js
+14's webpack build has an ESM interop bug that breaks `pdfjs-dist@5`'s
+module-load path, and v2 has no supported workaround for it. Pinning
+`pdfjs-dist` to v4 is **not** a reliable fix for v2 on Next.js 14 — do
+not rely on it. Support for Next.js 14 is being worked on upstream but
+is not available today.
 
-`pdfjs-dist` v5 is ESM-only. Next.js 14's webpack 5 build pipeline
-has a known ESM interop bug
-([wojtekmaj/react-pdf#1699](https://github.com/wojtekmaj/react-pdf/issues/1699))
-that throws on the import path PDF.js takes when initializing its
-worker. The bug is fixed in Next.js 15 (and avoided entirely under
-Turbopack), but Next.js 14 + webpack remains broken.
+Pick one of the two supported paths below.
 
-The workaround is to pin `pdfjs-dist` to v4, which still ships both
-ESM and CommonJS. Webpack 5 picks the CommonJS build and the import
-chain succeeds. `@react-pdf-kit/viewer` declares its `pdfjs-dist`
-peer range to include both v4 and v5, so the v4 pin is supported.
+## Option A (recommended): upgrade to Next.js 15 + Turbopack
 
-Keep this override in place until the project upgrades off Next.js 14.
+Next.js 15 with Turbopack runs `@react-pdf-kit/viewer` v2 with
+`pdfjs-dist@5` out of the box — no override needed.
 
-## Gotchas
+1. Upgrade the project to Next.js 15.
+2. Run the dev server with Turbopack:
 
-- **The override must be set in EVERY package-manager format** the
-  project might use (or might be cloned with). pnpm, npm 8+, and
-  yarn each read a different field. Setting only `pnpm.overrides`
-  silently breaks contributors using `npm install`.
-- **Re-install after editing `package.json`.** Overrides apply at
-  install time, not at build time; the existing `node_modules/` will
-  still have v5 until you re-install.
-- **Delete `node_modules/` and the lockfile** if a previous v5
-  install left behind hoisted state. Most package managers warn but
-  some silently retain the old resolution.
-- **The override only fixes the build error.** The viewer's runtime
-  behavior is otherwise identical between `pdfjs-dist` v4 and v5 for
-  React PDF Kit's purposes; no API change is required in the
-  application code.
-- **Document the override in the host project's README** so future
-  maintainers know why `pdfjs-dist` is pinned to a major version
-  behind the React PDF Kit default.
+   ```jsonc
+   // package.json
+   {
+     "scripts": {
+       "dev": "next dev --turbopack",
+       "build": "next build",
+       "start": "next start"
+     }
+   }
+   ```
 
-## Procedure
+3. Set up the viewer with `react-pdf-kit-nextjs-app-router` (App
+   Router) or `react-pdf-kit-nextjs-pages-router` (Pages Router). No
+   `pdfjs-dist` install or `workerUrl` is required for the default
+   case.
 
-### 1. Confirm you're hitting the bug
+This is the path to prefer for any project that can move off Next.js
+14.
 
-Open the failing build log. If you see:
+## Option B: stay on Next.js 14 with the legacy package
 
-```
-TypeError: Object.defineProperty called on non-object
-    at <anonymous>
-    at .../pdfjs-dist/build/pdf.mjs:...
-```
-
-(or a similar stack rooted in `pdfjs-dist/build/pdf.mjs`), AND the
-project's `next` version starts with `14.`, AND the project does NOT
-have `experimental.turbo` or `--turbo` enabled. This is the bug this
-skill addresses.
-
-### 2. Add the package-manager overrides
-
-Edit `package.json`. Add ALL THREE of the following blocks:
-
-```json
-{
-  "pnpm": {
-    "overrides": {
-      "pdfjs-dist": "4.10.38"
-    }
-  },
-  "overrides": {
-    "pdfjs-dist": "4.10.38"
-  },
-  "resolutions": {
-    "pdfjs-dist": "4.10.38"
-  }
-}
-```
-
-Pin to a specific 4.x patch (for example, `4.10.38`), not a range.
-Overrides behave most predictably with exact versions.
-
-Also bump the `pdfjs-dist` line in `dependencies` (or
-`devDependencies`) to match:
-
-```json
-{
-  "dependencies": {
-    "pdfjs-dist": "4.10.38"
-  }
-}
-```
-
-### 3. Re-install with a clean slate
+If upgrading is not an option yet, do **not** use
+`@react-pdf-kit/viewer@2` on Next.js 14. Use the legacy
+[`@pdf-viewer/react`](https://www.npmjs.com/package/@pdf-viewer/react)
+package instead, which supports the Next.js 14 + webpack toolchain.
 
 ```bash
-rm -rf node_modules pnpm-lock.yaml package-lock.json yarn.lock
-pnpm install        # or npm install / yarn install / bun install
+pnpm remove @react-pdf-kit/viewer
+pnpm add @pdf-viewer/react
 ```
 
-Confirm `pdfjs-dist` resolves to 4.x:
-
-```bash
-pnpm why pdfjs-dist            # pnpm
-npm ls pdfjs-dist              # npm
-yarn why pdfjs-dist            # yarn
-```
-
-Every match should be on `4.x`. If any v5 entry remains, re-check
-the override blocks for typos.
-
-### 4. Build
-
-```bash
-pnpm build
-```
-
-The previously-failing build should now succeed. The viewer (set up
-per `react-pdf-kit-nextjs-app-router` or
-`react-pdf-kit-nextjs-pages-router`) renders normally at runtime.
-
-### 5. Document the override
-
-Add a short note to the project's README:
-
-> ### Why `pdfjs-dist` is pinned to v4
->
-> Next.js 14's webpack ESM interop has a bug
-> ([wojtekmaj/react-pdf#1699](https://github.com/wojtekmaj/react-pdf/issues/1699))
-> that prevents `pdfjs-dist@5` from loading. We pin `pdfjs-dist` to
-> v4 via package-manager overrides until we upgrade to Next.js 15.
+Follow that package's own documentation for the provider chain and
+`pdfjs-dist` configuration. Plan to migrate to `@react-pdf-kit/viewer`
+v2 once the project is on Next.js 15.
 
 ## Verify
 
-```bash
-pnpm build      # must exit 0
-pnpm dev        # render a PDF; first page must appear
-```
-
-Pre-fix and post-fix transcripts are captured by task T033 in
-`samples/nextjs-14-override/verification/`. To reproduce the bug
-and double-check this skill is intact: temporarily flip the override
-and the `dependencies` entry to `5.4.530`, re-install, then build.
-The documented error should appear.
+- **Option A**: after upgrading, `next build` and `next dev --turbopack`
+  both succeed, and a page renders the first PDF page with no
+  `Object.defineProperty` or `Promise.withResolve` errors.
+- **Option B**: `@react-pdf-kit/viewer` is no longer a dependency, the
+  Next.js 14 build succeeds with `@pdf-viewer/react`, and a PDF renders.
 
 ## References
 
-- Upstream bug: <https://github.com/wojtekmaj/react-pdf/issues/1699>
-- pnpm overrides: <https://pnpm.io/package_json#pnpmoverrides>
-- npm overrides: <https://docs.npmjs.com/cli/v9/configuring-npm/package-json#overrides>
-- yarn resolutions: <https://classic.yarnpkg.com/lang/en/docs/selective-version-resolutions/>
+- Upstream ESM bug context: <https://github.com/wojtekmaj/react-pdf/issues/1699>
+- Legacy package: <https://www.npmjs.com/package/@pdf-viewer/react>
 - Companion skills:
   - `react-pdf-kit-nextjs-app-router` and
-    `react-pdf-kit-nextjs-pages-router`: apply either of these AFTER
-    this override to set up the actual viewer.
+    `react-pdf-kit-nextjs-pages-router`: apply after upgrading to
+    Next.js 15.

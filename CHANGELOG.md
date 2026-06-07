@@ -19,7 +19,51 @@ range under a **Validated against** line.
 
 ## [Unreleased]
 
-(No changes yet since v1.0.0-beta.2.)
+Retarget the entire catalog at the `@react-pdf-kit/viewer` v2.x.x
+release line, align every skill with the official v2 docs, and
+centralize all worker / `pdfjs-dist` configuration in
+`react-pdf-kit-worker-config`.
+
+**Validated against**: `@react-pdf-kit/viewer` `>=2.0.0 <3.0.0`
+
+### Changed
+
+- Every skill's `metadata.react_pdf_kit_version` moved from
+  `>=1.0.0 <2.0.0` to `>=2.0.0 <3.0.0`. Descriptions updated to match.
+- Install instructions across all skills now install **only**
+  `@react-pdf-kit/viewer`. Per the v2 docs, `pdfjs-dist` is an
+  auto-installed peer dependency (default `5.4.530`); it is installed
+  explicitly only when overriding the version.
+- Default examples use `<RPLayout toolbar>` and drop the manual
+  `RPTheme` (`RPConfig` wraps theming and worker setup internally). The
+  optional `RPConfig` `licenseKey` prop is documented.
+- `react-pdf-kit-nextjs-app-router` and
+  `react-pdf-kit-nextjs-pages-router` restructured around the
+  documented client-only pattern (`'use client'` + `next/dynamic`
+  `ssr: false`), targeting Next.js 15 + Turbopack, and now reference
+  the `Promise.withResolve is not a function` server-render error.
+- `react-pdf-kit-worker-config` rewritten around v2: the worker is
+  auto-configured (zero setup by default); the skill now owns the
+  `pdfjs-dist` version-override flow (install + package-manager
+  override) and the per-bundler `RPConfig` `workerUrl` recipes (Vite
+  `?url`, Next.js 15 Turbopack `import.meta.url`, webpack
+  `copy-webpack-plugin`).
+- `react-pdf-kit-nextjs14-pdfjs-override` rewritten as a compatibility
+  note: **v2 does not support Next.js 14**. It now documents the two
+  supported paths (upgrade to Next.js 15 + Turbopack, or stay on
+  Next.js 14 with the legacy `@pdf-viewer/react` package) instead of
+  the obsolete "pin `pdfjs-dist` to v4" recipe.
+
+### Removed
+
+- All manual PDF.js worker-configuration guidance (the
+  `pdfjs-worker.ts` side-effect module, `GlobalWorkerOptions.workerSrc`
+  assignment, and the Next.js `useEffect` worker wiring) removed from
+  the general skills `react-pdf-kit-setup`, `react-pdf-kit-vite`,
+  `react-pdf-kit-nextjs-app-router`, and
+  `react-pdf-kit-nextjs-pages-router`. These skills now focus solely on
+  React PDF Kit usage and defer all worker / `pdfjs-dist` configuration
+  to `react-pdf-kit-worker-config`.
 
 ## [1.0.0-beta.2] - 2026-05-15
 
