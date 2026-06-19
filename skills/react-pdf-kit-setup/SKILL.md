@@ -51,12 +51,35 @@ pnpm add @react-pdf-kit/viewer
 (Use `npm install`, `yarn add`, or `bun add` if not on pnpm.) Nothing
 else is required; `pdfjs-dist` is pulled in automatically.
 
-### 2. Render the viewer with the canonical provider chain
+### 2. Add `RPConfig` at the app root
+
+`RPConfig` must be rendered once at the root of your application. It
+handles worker setup and theming for every viewer instance below it.
+
+```tsx
+// src/App.tsx
+import { RPConfig } from '@react-pdf-kit/viewer'
+import { PdfViewer } from './PdfViewer'
+
+export function App() {
+  return (
+    <RPConfig>
+      <main style={{ height: '100vh' }}>
+        <PdfViewer src="/sample.pdf" />
+      </main>
+    </RPConfig>
+  )
+}
+```
+
+For explicit theme control, pass `customVariables` / `customDarkVariables`
+to `RPConfig` (or nest an `RPTheme`).
+
+### 3. Render the viewer with the provider chain
 
 ```tsx
 // src/PdfViewer.tsx
 import {
-  RPConfig,
   RPProvider,
   RPLayout,
   RPPages,
@@ -64,40 +87,19 @@ import {
 
 export function PdfViewer({ src }: { src: string }) {
   return (
-    <RPConfig>
-      <RPProvider src={src}>
-        <RPLayout toolbar>
-          <RPPages />
-        </RPLayout>
-      </RPProvider>
-    </RPConfig>
+    <RPProvider src={src}>
+      <RPLayout toolbar>
+        <RPPages />
+      </RPLayout>
+    </RPProvider>
   )
 }
 ```
 
-`RPLayout`'s `toolbar` prop renders the default toolbar. `RPConfig` is
-the outermost wrapper and handles worker setup and theming. For
-explicit theme control, pass `customVariables` / `customDarkVariables`
-to `RPConfig` (or nest an `RPTheme`).
-
-### 3. Mount it
-
-```tsx
-// src/App.tsx
-import { PdfViewer } from './PdfViewer'
-
-export function App() {
-  return (
-    <main style={{ height: '100vh' }}>
-      <PdfViewer src="/sample.pdf" />
-    </main>
-  )
-}
-```
-
-The viewer adapts to its container, so give the parent a definite
-height (`100vh` or fixed) for virtual scrolling to work. You can also
-size it directly via `RPLayout`'s `style` prop.
+`RPLayout`'s `toolbar` prop renders the default toolbar. The viewer
+adapts to its container, so give the parent a definite height (`100vh`
+or fixed) for virtual scrolling to work. You can also size it directly
+via `RPLayout`'s `style` prop.
 
 ## Verify
 

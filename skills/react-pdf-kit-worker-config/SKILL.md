@@ -11,8 +11,8 @@ metadata:
 # react-pdf-kit-worker-config
 
 **Use this skill when**: the developer needs to override the
-`pdfjs-dist` version (for example, downgrading to `4.10.38` for broader
-browser support) or point the PDF.js worker at a custom URL. This is
+`pdfjs-dist` version (for example, pinning to `4.10.38` for specific
+compatibility requirements) or point the PDF.js worker at a custom URL. This is
 the single home for all worker and `pdfjs-dist` configuration; the
 setup and framework skills deliberately contain none.
 
@@ -38,8 +38,10 @@ serve the worker from a custom location.
   pointing at a different `pdfjs-dist` build than the one resolved at
   runtime causes version-mismatch errors.
 - **Downgrading below `4.10.38` is not supported** and can break viewer
-  functionality. `4.10.38` is the documented floor for broader browser
-  support; `5.4.530` is the default.
+  functionality. `4.10.38` is the documented floor; `5.4.530` is the
+  default. Note: `@react-pdf-kit/viewer` ships polyfills so v5 works
+  across supported browsers — prefer v5 unless you have a specific
+  compatibility constraint that requires v4.
 
 ## Procedure
 
@@ -49,7 +51,7 @@ Install the version you want, then lock it with an override so every
 resolution uses it.
 
 ```bash
-pnpm add pdfjs-dist@4.10.38     # example: broader browser support
+pnpm add pdfjs-dist@4.10.38     # example: pin to v4 for specific compatibility requirements
 ```
 
 ```jsonc
