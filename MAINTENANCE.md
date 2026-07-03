@@ -113,12 +113,24 @@ release after v1.0.0.
 
 ## Sample inventory
 
-| Sample | Framework | pdfjs-dist | Used by |
-|--------|-----------|------------|---------|
-| `samples/generic-react/` | Vite + React 18 | v5 | `react-pdf-kit-setup`, `react-pdf-kit-toolbar-customization`, `react-pdf-kit-custom-layout` |
-| `samples/vite/` | Vite 5 | v5 | `react-pdf-kit-setup`, `react-pdf-kit-vite`, `react-pdf-kit-worker-config` |
-| `samples/nextjs-app-router/` | Next.js 15 + Turbopack | v5 | `react-pdf-kit-nextjs-app-router`, `react-pdf-kit-nextjs-pages-router` (via `verification/pages-router/` shim), `react-pdf-kit-worker-config`, `react-pdf-kit-toolbar-customization`, `react-pdf-kit-custom-layout` |
-| `samples/nextjs-14-override/` | Next.js 14 + webpack | v4 (post-fix) | `react-pdf-kit-nextjs14-pdfjs-override` |
+| Sample | Framework | pdfjs-dist | Used by | Build-verified? |
+|--------|-----------|------------|---------|------------------|
+| `samples/generic-react/` | Vite + React 18 | v5 | `react-pdf-kit-setup`, `react-pdf-kit-toolbar-customization`, `react-pdf-kit-custom-layout` | Yes — `pnpm install && pnpm build` passes against `@react-pdf-kit/viewer@2.7.2` (v1.0.0 release check). |
+| `samples/vite/` | Vite 5 | v5 | `react-pdf-kit-setup`, `react-pdf-kit-vite`, `react-pdf-kit-worker-config` | **No.** Placeholder `package.json` + `README.md` only since the initial scaffold commit — never hydrated into a runnable Vite app (no `tsconfig.json`, `vite.config.ts`, `index.html`, or `src/`). `pnpm build` fails immediately. |
+| `samples/nextjs-app-router/` | Next.js 15 + Turbopack | v5 | `react-pdf-kit-nextjs-app-router`, `react-pdf-kit-nextjs-pages-router` (via `verification/pages-router/` shim), `react-pdf-kit-worker-config`, `react-pdf-kit-toolbar-customization`, `react-pdf-kit-custom-layout` | **No.** Same placeholder-only state as `samples/vite/`; no Next.js app scaffold exists yet. |
+| `samples/nextjs-14-override/` | Next.js 14 + webpack | v4 (post-fix) | `react-pdf-kit-nextjs14-pdfjs-override` | **No.** Placeholder-only, and its premise (pin `pdfjs-dist` to v4 as a workaround) is now superseded by the skill's rewritten guidance (v2 doesn't support Next.js 14 at all; use Next.js 15 or the legacy `@pdf-viewer/react` package). Needs a rewrite, not just hydration, before it can build-verify anything. |
+
+**Known gap as of `v1.0.0`**: three of four samples have never been
+build-verified, on any release including the `v1.0.0-beta.x` line —
+`samples.yml` has zero recorded CI runs on the repo. `v1.0.0-beta.0`'s
+CHANGELOG entry flagged this as outstanding at the time; it was not
+resolved before this release either. Only `samples/generic-react/` is
+confirmed working. Treat every skill *other than* `react-pdf-kit-setup`,
+`react-pdf-kit-toolbar-customization`, and `react-pdf-kit-custom-layout`
+as verified by conformance script only (`scripts/verify-skill.sh`), not
+by an actual build. Hydrating the remaining three samples (and
+rewriting `nextjs-14-override` to match its current skill content) is
+required before their skills can be considered build-verified.
 
 If a skill needs verification against a framework / version combination
 not listed above, add a new sample in the same PR as the skill and
@@ -132,7 +144,7 @@ end-to-end to ensure the runbook stays accurate. Record each walk here.
 | Date | Flow | Outcome |
 |------|------|---------|
 |      | Deprecation drill (per tasks T038) | TBD |
-|      | First release (v1.0.0, per tasks T045) | TBD |
+| 2026-07-03 | First release (v1.0.0, per tasks T045) | Partial. `scripts/verify-all.sh` passes (8/8 skills). Only `samples/generic-react/` build-verified; `samples/vite/`, `samples/nextjs-app-router/`, `samples/nextjs-14-override/` are unhydrated placeholders (see Sample inventory). Released anyway per maintainer decision; sample hydration tracked as follow-up work, not blocking. |
 
 ## Security review
 

@@ -10,7 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@react-pdf-kit/viewer": ">=1.0.0 <2.0.0",
+    "@react-pdf-kit/viewer": ">=2.0.0 <3.0.0",
     "pdfjs-dist": "5.4.530",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"

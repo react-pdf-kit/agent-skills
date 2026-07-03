@@ -17,7 +17,7 @@ range under a **Validated against** line.
 - Reference skills by their kebab-case `name`, not their display
   description.
 
-## [Unreleased]
+## [1.0.0] - 2026-07-03
 
 Retarget the entire catalog at the `@react-pdf-kit/viewer` v2.x.x
 release line, align every skill with the official v2 docs, and
@@ -64,6 +64,23 @@ centralize all worker / `pdfjs-dist` configuration in
   `react-pdf-kit-nextjs-pages-router`. These skills now focus solely on
   React PDF Kit usage and defer all worker / `pdfjs-dist` configuration
   to `react-pdf-kit-worker-config`.
+- Internal `TESTING.md` (pre-release, private-repo testing instructions
+  not meant for the public catalog).
+
+### Fixed
+
+- `samples/generic-react/`, `samples/vite/`, and
+  `samples/nextjs-app-router/` still pinned `@react-pdf-kit/viewer` to
+  `>=1.0.0 <2.0.0`, a range no longer published to npm. Bumped to
+  `>=2.0.0 <3.0.0` to match the skills' own `metadata.react_pdf_kit_version`.
+
+### Known gaps
+
+- `samples/vite/`, `samples/nextjs-app-router/`, and
+  `samples/nextjs-14-override/` are unhydrated placeholder scaffolds
+  and do not build; only `samples/generic-react/` is currently
+  build-verified. See `MAINTENANCE.md`'s Sample inventory for detail
+  and follow-up plan.
 
 ## [1.0.0-beta.2] - 2026-05-15
 
