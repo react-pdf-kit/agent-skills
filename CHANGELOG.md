@@ -17,6 +17,20 @@ range under a **Validated against** line.
 - Reference skills by their kebab-case `name`, not their display
   description.
 
+## [Unreleased]
+
+### Changed
+
+- `react-pdf-kit-worker-config` gains a **Content Security Policy**
+  section. From `@react-pdf-kit/viewer` `2.11.0` the default PDF.js
+  worker ships as a real same-origin file
+  (`dist/assets/pdf.worker.min.mjs`) instead of a `data:` URI, so a
+  strict `script-src 'self'` / `worker-src 'self'` policy works without
+  `data:` or `blob:`. The section covers the `workerUrl` workaround for
+  older versions, CDN-hosted bundles, bundlers without
+  `import.meta.url` support, and the Vite dev `optimizeDeps.exclude`
+  fallback.
+
 ## [1.0.0] - 2026-07-03
 
 Retarget the entire catalog at the `@react-pdf-kit/viewer` v2.x.x

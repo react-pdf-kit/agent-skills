@@ -161,8 +161,10 @@ fi
 # require a final ".<extension>" so prose URLs containing the literal
 # strings "assets/" don't false-positive (e.g., the Vite asset URL
 # example "/assets/pdf.worker.min-<hash>.mjs" must NOT be treated as
-# a sibling reference).
-refs_text="$(printf '%s\n' "$body" | grep -oE '(references|assets|scripts)/[A-Za-z0-9._/-]+\.[A-Za-z0-9]+' | sort -u || true)"
+# a sibling reference). The path must also start at a token boundary, so a
+# package path such as "@react-pdf-kit/viewer/dist/assets/pdf.worker.min.mjs"
+# is not mistaken for this skill's own "assets/" folder.
+refs_text="$(printf '%s\n' "$body" | grep -oE '(^|[^A-Za-z0-9._/-])(references|assets|scripts)/[A-Za-z0-9._/-]+\.[A-Za-z0-9]+' | sed -E 's#^[^rsa]##' | sort -u || true)"
 while IFS= read -r ref; do
   [[ -z "$ref" ]] && continue
   ref_path="$skill_dir/$ref"
